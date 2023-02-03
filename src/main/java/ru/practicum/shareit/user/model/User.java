@@ -5,14 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-/**
- * TODO Sprint add-controllers.
- */
+import javax.validation.constraints.NotBlank;
+
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     Long id;
+
+    @NotBlank
     String email;
+    
     String name;
 }
