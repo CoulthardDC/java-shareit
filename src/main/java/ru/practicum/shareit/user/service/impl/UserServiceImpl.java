@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserCreateException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.user.exception.UserRemoveException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeUser(Long userId) {
         if (userDao.removeById(userId).isEmpty()) {
-            throw new RuntimeException();
+            throw new UserRemoveException();
         }
     }
 
