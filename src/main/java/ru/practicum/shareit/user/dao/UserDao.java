@@ -3,15 +3,16 @@ package ru.practicum.shareit.user.dao;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDao {
     List<User> findAll();
 
-    User findUserById(Long userId);
+    Optional<User> findUserById(Long userId);
 
-    User save(User user);
+    Optional<User> save(User user);
 
-    User update(User user);
+    Optional<User> update(User user);
 
-    void removeById(Long userId);
+    Optional<User> removeById(Long userId);
 }

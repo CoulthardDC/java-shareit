@@ -4,10 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class UserDaoInMemoryImpl implements UserDao {
@@ -20,24 +17,47 @@ public class UserDaoInMemoryImpl implements UserDao {
     }
 
     @Override
-    public User findUserById(Long userId) {
-        return users.get(id);
+    public Optional<User> findUserById(Long userId) {
+        return Optional.ofNullable(users.get(userId));
     }
 
     @Override
-    public User save(User user) {
-        user.setId(++id);
-        users.put(user.getId(), user);
-        return user;
+    public Optional<User> save(User user) {
+        if (user.getId() != null || users.values()
+                .stream()
+                .anyMatch(u -> u.getEmail().equals(user.getEmail()))
+        ) {
+            return Optional.empty();
+        } else {
+            user.setId(++id);
+            users.put(user.getId(), user);
+            return Optional.of(user);
+        }
     }
 
     @Override
-    public User update(User user) {
-        return users.replace(user.getId(), user);
+    public Optional<User> update(User user) {
+        if (users.containsKey(user.getId())) {
+            User replacedUser = users.get(user.getId());
+            if (users.values()
+                    .stream()
+                    .noneMatch(u -> u.getEmail().equals(user.getEmail()))
+            ) {
+                if (user.getName() != null && !Objects.equals(user.getName(), "")) {
+                    replacedUser.setName(user.getName());
+                }
+
+                if (user.getEmail() != null && !user.getEmail().isBlank()) {
+                    replacedUser.setEmail(user.getEmail());
+                }
+                return Optional.of(replacedUser);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
-    public void removeById(Long userId) {
-        users.remove(userId);
+    public Optional<User> removeById(Long userId) {
+        return Optional.ofNullable(users.remove(userId));
     }
 }
