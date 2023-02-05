@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemDao {
-
     Optional<Item> save(Item item);
 
     Optional<Item> update(Item item, Long ownerId);
@@ -14,4 +13,6 @@ public interface ItemDao {
     Optional<Item> findItemById(Long itemId);
 
     List<Item> findItemsByOwner(Long ownerId);
+
+    List<Item> findItemsBySearch(String text);
 }

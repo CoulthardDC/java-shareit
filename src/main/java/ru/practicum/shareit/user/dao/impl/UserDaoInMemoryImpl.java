@@ -8,8 +8,8 @@ import java.util.*;
 
 @Repository
 public class UserDaoInMemoryImpl implements UserDao {
-    Map<Long, User> users = new HashMap<>();
-    Long id = 0L;
+    private final Map<Long, User> users = new HashMap<>();
+    private Long id = 0L;
 
     @Override
     public List<User> findAll() {

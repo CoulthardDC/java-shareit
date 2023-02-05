@@ -15,6 +15,7 @@ import javax.validation.Valid;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
+    private static final String X_HEADER = "X-Sharer-User-Id";
 
     @Autowired
     public ItemController(ItemService itemService) {
@@ -23,14 +24,14 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ItemDto itemDto,
-                                    @RequestHeader("X-Sharer-User-Id") long ownerId) {
+                                    @RequestHeader(X_HEADER) long ownerId) {
         log.info("Получен запрос к эндпоинту: {} /items", "POST");
         return new ResponseEntity<>(itemService.addItem(itemDto, ownerId), HttpStatus.OK);
     }
 
     @PatchMapping(value = "/{itemId}")
     public ResponseEntity<?> update(@RequestBody ItemDto itemDto,
-                                    @RequestHeader("X-Sharer-User-Id") long ownerId,
+                                    @RequestHeader(X_HEADER) long ownerId,
                                     @PathVariable(value = "itemId") long itemId) {
         log.info("Получен запрос к эндпоинту: {} /items/{}", "PATCH", itemId);
         return new ResponseEntity<>(itemService.updateItem(itemDto, itemId, ownerId),
@@ -44,8 +45,15 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findItemsByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId) {
+    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId) {
         log.info("Получен запрос к эндпоинту: {} /items", "GET");
         return new ResponseEntity<>(itemService.getItemsByOwner(ownerId), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<?> searchItems(
+            @RequestParam(value = "text", defaultValue = "") String text) {
+        log.info("Получен запрос к эндпоинту: {} /items/search?text={}", "GET", text);
+        return new ResponseEntity<>(itemService.getItemsBySearch(text), HttpStatus.OK);
     }
 }

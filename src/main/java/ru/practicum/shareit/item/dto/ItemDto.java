@@ -16,19 +16,19 @@ import javax.validation.constraints.Size;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
-    Long id;                // id вещи
+    Long id;
 
     @NotBlank
-    String name;            // название вещи
+    String name;
 
     @Size(max = 200)
     @NotEmpty
-    String description;     // описание вещи
+    String description;
 
-    User owner;             // владелец вещи
+    User owner;
 
     @NotNull
-    Boolean available;      // статус доступности вещи
+    Boolean available;
 
-    ItemRequest request;    // ссылка на запрос
+    ItemRequest request;
 }

@@ -57,6 +57,14 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ItemDto> getItemsBySearch(String text) {
+        return itemDao.findItemsBySearch(text.toLowerCase())
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
+    }
+
     private Item getItemOrElseThrow(Optional<Item> optionalItem, Long itemId) {
         return optionalItem.orElseThrow(
                 () -> new ItemNotFoundException(itemId)

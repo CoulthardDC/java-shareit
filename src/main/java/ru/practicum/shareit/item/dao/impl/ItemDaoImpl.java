@@ -4,16 +4,13 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 public class ItemDaoImpl implements ItemDao {
-    private Map<Long, Item> items = new HashMap<>();
-    Long id = 0L;
+    private final Map<Long, Item> items = new HashMap<>();
+    private Long id = 0L;
 
     @Override
     public Optional<Item> save(Item item) {
@@ -56,5 +53,19 @@ public class ItemDaoImpl implements ItemDao {
                 .stream()
                 .filter(i -> i.getOwner().getId().equals(ownerId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Item> findItemsBySearch(String text) {
+        if (text.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            return items.values()
+                    .stream()
+                    .filter(i -> (i.getName().toLowerCase().contains(text)
+                            || i.getDescription().toLowerCase().contains(text))
+                            && i.getAvailable())
+                    .collect(Collectors.toList());
+        }
     }
 }

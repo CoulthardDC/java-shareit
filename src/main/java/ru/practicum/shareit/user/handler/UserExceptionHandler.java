@@ -16,7 +16,6 @@ import javax.validation.ValidationException;
 @RestControllerAdvice("ru.practicum.shareit")
 @Slf4j
 public class UserExceptionHandler {
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
         public ErrorDto handleValidationException(final ValidationException e) {
