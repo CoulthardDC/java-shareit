@@ -13,7 +13,7 @@ import ru.practicum.shareit.user.exception.UserRemoveException;
 
 import javax.validation.ValidationException;
 
-@RestControllerAdvice("ru.practicum.shareit.user.controller")
+@RestControllerAdvice("ru.practicum.shareit")
 @Slf4j
 public class UserExceptionHandler {
 
