@@ -39,15 +39,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto addUser(User user) {
-        User addedUser = createOrElseThrow(userDao.save(user));
+    public UserDto addUser(UserDto userDto) {
+        User addedUser = createOrElseThrow(userDao.save(UserMapper.toUser(userDto)));
         return UserMapper.toUserDto(addedUser);
     }
 
     @Override
-    public UserDto updateUser(User user, Long userId) {
-        user.setId(userId);
-        User updatedUser = createOrElseThrow(userDao.update(user));
+    public UserDto updateUser(UserDto userDto, Long userId) {
+        userDto.setId(userId);
+        User updatedUser = createOrElseThrow(userDao.update(UserMapper.toUser(userDto)));
         return UserMapper.toUserDto(updatedUser);
     }
 
