@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto addUser (User user) {
+    public UserDto addUser(User user) {
         User addedUser = createOrElseThrow(userDao.save(user));
         return UserMapper.toUserDto(addedUser);
     }

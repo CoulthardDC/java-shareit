@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> removeUser (@PathVariable("id") long userId) {
+    public ResponseEntity<?> removeUser(@PathVariable("id") long userId) {
         userService.removeUser(userId);
         log.info("Получен запрос к эндпоинту: {} /users/{}", "DELETE", userId);
         return ResponseEntity.status(HttpStatus.OK).body(null);

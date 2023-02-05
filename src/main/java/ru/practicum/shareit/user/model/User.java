@@ -17,6 +17,7 @@ public class User {
     @Email
     @NotBlank
     String email;
-    
+
     String name;
 }
+
