@@ -37,23 +37,21 @@ public class UserDaoInMemoryImpl implements UserDao {
 
     @Override
     public Optional<User> update(User user) {
-        if (users.containsKey(user.getId())) {
-            User replacedUser = users.get(user.getId());
-            if (users.values()
-                    .stream()
-                    .noneMatch(u -> u.getEmail().equals(user.getEmail()))
-            ) {
-                if (user.getName() != null && !Objects.equals(user.getName(), "")) {
-                    replacedUser.setName(user.getName());
-                }
-
-                if (user.getEmail() != null && !user.getEmail().isBlank()) {
-                    replacedUser.setEmail(user.getEmail());
-                }
-                return Optional.of(replacedUser);
-            }
+        User replacedUser = users.get(user.getId());
+        if (users.values()
+                .stream()
+                .anyMatch(u -> u.getEmail().equals(user.getEmail()))
+                || replacedUser == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        if (user.getName() != null && !Objects.equals(user.getName(), "")) {
+            replacedUser.setName(user.getName());
+        }
+
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            replacedUser.setEmail(user.getEmail());
+        }
+        return Optional.of(replacedUser);
     }
 
     @Override

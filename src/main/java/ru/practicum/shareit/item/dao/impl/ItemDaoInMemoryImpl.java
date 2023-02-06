@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class ItemDaoImpl implements ItemDao {
+public class ItemDaoInMemoryImpl implements ItemDao {
     private final Map<Long, Item> items = new HashMap<>();
     private Long id = 0L;
 
@@ -25,21 +25,21 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public Optional<Item> update(Item item, Long ownerId) {
-        if (items.containsKey(item.getId())
-                && items.get(item.getId()).getOwner().getId().equals(ownerId)) {
-            Item replacedItem = items.get(item.getId());
-            if (item.getName() != null && !item.getName().isBlank()) {
-                replacedItem.setName(item.getName());
-            }
-            if (item.getDescription() != null && !item.getDescription().isBlank()) {
-                replacedItem.setDescription(item.getDescription());
-            }
-            if (item.getAvailable() != null) {
-                replacedItem.setAvailable(item.getAvailable());
-            }
-            return Optional.of(replacedItem);
+        Item replacedItem = items.get(item.getId());
+        if (!items.get(item.getId()).getOwner().getId().equals(ownerId)
+                || replacedItem == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        if (item.getName() != null && !item.getName().isBlank()) {
+            replacedItem.setName(item.getName());
+        }
+        if (item.getDescription() != null && !item.getDescription().isBlank()) {
+            replacedItem.setDescription(item.getDescription());
+        }
+        if (item.getAvailable() != null) {
+            replacedItem.setAvailable(item.getAvailable());
+        }
+        return Optional.of(replacedItem);
     }
 
     @Override
