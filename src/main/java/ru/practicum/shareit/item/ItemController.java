@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.controller;
+package ru.practicum.shareit.item;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.service.ItemService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -41,8 +41,10 @@ public class ItemController {
                     schema = @Schema(implementation = ItemDto.class)))
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ItemDto itemDto,
-                                    @RequestHeader(X_HEADER) long ownerId) {
-        log.info("Получен запрос к эндпоинту: {} /items", "POST");
+                                    @RequestHeader(X_HEADER) long ownerId,
+                                    HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(itemService.addItem(itemDto, ownerId), HttpStatus.OK);
     }
 
@@ -58,10 +60,12 @@ public class ItemController {
     public ResponseEntity<?> update(@RequestBody ItemDto itemDto,
                                     @RequestHeader(X_HEADER) long ownerId,
                                     @PathVariable(value = "itemId")
-                                        @Parameter(description = "id вещи",
-                                                required = true)
-                                        long itemId) {
-        log.info("Получен запрос к эндпоинту: {} /items/{}", "PATCH", itemId);
+                                    @Parameter(description = "id вещи",
+                                            required = true)
+                                    long itemId,
+                                    HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(itemService.updateItem(itemDto, itemId, ownerId),
                 HttpStatus.OK);
     }
@@ -76,10 +80,12 @@ public class ItemController {
                     schema = @Schema(implementation = ItemDto.class)))
     @GetMapping(value = "/{itemId}")
     public ResponseEntity<?> findItemById(@PathVariable(value = "itemId")
-                                              @Parameter(description = "id вещи",
-                                                      required = true)
-                                              long itemId) {
-        log.info("Получен запрос к эндпоинту: {} /items/{}", "GET", itemId);
+                                          @Parameter(description = "id вещи",
+                                                  required = true)
+                                          long itemId,
+                                          HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(itemService.getItemById(itemId), HttpStatus.OK);
     }
 
@@ -93,8 +99,10 @@ public class ItemController {
                     array = @ArraySchema(schema =
                     @Schema(implementation = ItemDto.class))))
     @GetMapping
-    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId) {
-        log.info("Получен запрос к эндпоинту: {} /items", "GET");
+    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId,
+                                              HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(itemService.getItemsByOwner(ownerId), HttpStatus.OK);
     }
 
@@ -109,8 +117,10 @@ public class ItemController {
                     @Schema(implementation = ItemDto.class))))
     @GetMapping(value = "/search")
     public ResponseEntity<?> searchItems(
-            @RequestParam(value = "text", defaultValue = "") String text) {
-        log.info("Получен запрос к эндпоинту: {} /items/search?text={}", "GET", text);
+            @RequestParam(value = "text", defaultValue = "") String text,
+            HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(itemService.getItemsBySearch(text), HttpStatus.OK);
     }
 }

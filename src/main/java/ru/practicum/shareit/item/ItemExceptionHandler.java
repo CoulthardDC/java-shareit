@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.handler;
+package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import ru.practicum.shareit.item.exception.ItemCreateException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.dto.ErrorDto;
 
-@RestControllerAdvice("ru.practicum.shareit.item.controller")
+@RestControllerAdvice("ru.practicum.shareit")
 @Slf4j
 public class ItemExceptionHandler {
     @ExceptionHandler

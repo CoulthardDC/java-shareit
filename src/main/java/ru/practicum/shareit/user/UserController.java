@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.controller;
+package ru.practicum.shareit.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,8 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -41,8 +42,9 @@ public class UserController {
                     array = @ArraySchema(schema =
                     @Schema(implementation = UserDto.class))))
     @GetMapping
-    public ResponseEntity<?> findAll() {
-        log.info("Получен запрос к эндпоинту: {} {}", "GET", "/users");
+    public ResponseEntity<?> findAll(HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
@@ -58,8 +60,10 @@ public class UserController {
     public ResponseEntity<?> findUserById(@PathVariable(value = "id")
                                               @Parameter(description = "id пользователя",
                                                       required = true)
-                                              long userId) {
-        log.info("Получен запрос к эндпоинту: {} /users/{}", "GET", userId);
+                                              long userId,
+                                          HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
 
@@ -72,8 +76,10 @@ public class UserController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = UserDto.class)))
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> create(@Valid @RequestBody UserDto userDto) {
-        log.info("Получен запрос к энжпоинту: {} /users", "GET");
+    public ResponseEntity<?> create(@Valid @RequestBody UserDto userDto,
+                                    HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(userService.addUser(userDto), HttpStatus.CREATED);
     }
 
@@ -91,8 +97,10 @@ public class UserController {
                                                 required = true)
                                         long userId,
                                     @RequestBody
-                                    UserDto userDto) {
-        log.info("Получен запрос к эндпоинту: {} /users/{}", "PATCH", userId);
+                                    UserDto userDto,
+                                    HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return new ResponseEntity<>(userService.updateUser(userDto, userId), HttpStatus.OK);
     }
 
@@ -103,9 +111,11 @@ public class UserController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> removeUser(@PathVariable(value = "id")
                                             @Parameter (description = "id пользователя")
-                                            long userId) {
+                                            long userId,
+                                        HttpServletRequest request) {
         userService.removeUser(userId);
-        log.info("Получен запрос к эндпоинту: {} /users/{}", "DELETE", userId);
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

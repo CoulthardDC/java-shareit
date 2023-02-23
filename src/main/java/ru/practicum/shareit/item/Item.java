@@ -1,45 +1,59 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.User;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-@Schema(description = "Модель вещи")
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "items")
 public class Item {
     @Schema(description = "Идентификатор вещи", example = "1")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_id")
     Long id;
 
     @NotBlank
     @Schema(description = "Наименование вещи", example = "Ноутбук Acer")
+    @Column(name = "item_name")
     String name;
 
     @Size(max = 200)
     @NotEmpty
     @Schema(description = "Описание вещи",
             example = "Ноутбук Acer. Два ядра, два гига, игровая видеокарта")
+    @Column(name = "item_description")
     String description;
 
     @NotNull
     @Schema(description = "Владелец вещи")
+    @ManyToOne
+    @JoinColumn(name = "item_owner_id")
     User owner;
 
     @NotNull
     @Schema(description = "Доступность вещи")
+    @Column(name = "item_available")
     Boolean available;
 
     @Schema(description = "Запрос на вещь")
-    ItemRequest request;
+    @Column(name = "item_request_id")
+    Long requestId;
 
     public Long getId() {
         return id;
@@ -102,7 +116,9 @@ public class Item {
                 ", description='" + description + '\'' +
                 ", owner=" + owner +
                 ", available=" + available +
-                ", request=" + request +
+                ", request=" + requestId +
                 '}';
     }
 }
+
+

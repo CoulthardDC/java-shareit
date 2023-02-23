@@ -1,27 +1,39 @@
-package ru.practicum.shareit.user.model;
+package ru.practicum.shareit.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Модель пользователя")
+@Entity
+@Table(name = "users")
 public class User {
     @Schema(description = "Идентификатор пользователя", example = "1")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     Long id;
 
     @Email
     @NotBlank
     @Schema(description = "Емейл пользователя", example = "user@user.com")
+    @Column(name = "user_email")
     String email;
 
     @Schema(description = "Имя пользователя", example = "Coulthard_dc")
+    @Column(name = "user_name")
     String name;
 
     public Long getId() {
