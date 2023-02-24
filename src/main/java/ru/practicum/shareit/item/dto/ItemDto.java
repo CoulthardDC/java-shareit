@@ -4,8 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -31,7 +32,7 @@ public class ItemDto {
     String description;
 
     @Schema(description = "Владелец вещи")
-    User owner;
+    UserDto owner;
 
     @NotNull
     @Schema(description = "Доступность вещи")
@@ -39,6 +40,25 @@ public class ItemDto {
 
     @Schema(description = "Запрос на вещь")
     ItemRequest request;
+
+    BookingShortDto lastBooking;
+    BookingShortDto nextBooking;
+
+    public BookingShortDto getLastBooking() {
+        return lastBooking;
+    }
+
+    public void setLastBooking(BookingShortDto lastBooking) {
+        this.lastBooking = lastBooking;
+    }
+
+    public BookingShortDto getNextBooking() {
+        return nextBooking;
+    }
+
+    public void setNextBooking(BookingShortDto nextBooking) {
+        this.nextBooking = nextBooking;
+    }
 
     public Long getId() {
         return id;
@@ -64,12 +84,16 @@ public class ItemDto {
         this.description = description;
     }
 
-    public User getOwner() {
+    public UserDto getOwner() {
         return owner;
     }
 
     public Boolean getAvailable() {
         return available;
+    }
+
+    public void setOwner(UserDto owner) {
+        this.owner = owner;
     }
 
     @Override

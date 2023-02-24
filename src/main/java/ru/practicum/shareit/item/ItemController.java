@@ -83,10 +83,13 @@ public class ItemController {
                                           @Parameter(description = "id вещи",
                                                   required = true)
                                           long itemId,
+                                          @RequestHeader(X_HEADER) Long userId,
                                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
                 request.getRequestURL());
-        return new ResponseEntity<>(itemService.getItemById(itemId), HttpStatus.OK);
+        return new ResponseEntity<>(
+                itemService.getItemById(itemId, userId),
+                HttpStatus.OK);
     }
 
     @Operation(
