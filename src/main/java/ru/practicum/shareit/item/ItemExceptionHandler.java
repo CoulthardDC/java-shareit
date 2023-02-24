@@ -7,6 +7,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.item.exception.CommentCreateException;
 import ru.practicum.shareit.item.exception.ItemCreateException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.dto.ErrorDto;
@@ -41,6 +42,16 @@ public class ItemExceptionHandler {
         log.warn(e.getMessage());
         return new ResponseEntity<>(
                 new ErrorDto("Отсутствует необходимы заголовок", e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleCommentCreateException(final CommentCreateException e) {
+        log.warn(e.getMessage());
+        return new ResponseEntity<>(
+                new ErrorDto("Ошибка при создании коментария", e.getMessage()),
                 HttpStatus.BAD_REQUEST
         );
     }

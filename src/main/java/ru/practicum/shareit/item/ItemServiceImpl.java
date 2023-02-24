@@ -1,18 +1,24 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.exception.CommentCreateException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.item.mapper.CommentMapper;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.User;
 
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,15 +31,18 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
 
     @Autowired
     public ItemServiceImpl(ItemRepository itemRepository,
                            UserRepository userRepository,
-                           BookingRepository bookingRepository) {
+                           BookingRepository bookingRepository,
+                           CommentRepository commentRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -82,6 +91,13 @@ public class ItemServiceImpl implements ItemService {
         if (userId.equals(item.getOwner().getId())) {
             setBookingForItemDto(itemDto);
         }
+        itemDto.setComments(
+                commentRepository.findAllByItem_Id(itemId,
+                                Sort.by(Sort.Direction.DESC, "created"))
+                        .stream()
+                        .map(CommentMapper::toCommentDto)
+                        .collect(Collectors.toList())
+        );
         return itemDto;
     }
 
@@ -93,6 +109,14 @@ public class ItemServiceImpl implements ItemService {
                 .sorted(Comparator.comparing(ItemDto::getId))
                 .collect(Collectors.toList());
         items.forEach(this::setBookingForItemDto);
+        items.forEach(
+                itemDto -> itemDto.setComments(
+                        commentRepository.findAllByItem_Id(itemDto.getId(),
+                                        Sort.by(Sort.Direction.DESC, "created"))
+                                .stream()
+                                .map(CommentMapper::toCommentDto)
+                                .collect(Collectors.toList()))
+        );
         return items;
     }
 
@@ -106,6 +130,37 @@ public class ItemServiceImpl implements ItemService {
                     .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<CommentDto> getCommentsByItemId(Long itemId) {
+        return commentRepository.findAllByItem_Id(itemId, Sort.by(Sort.Direction.DESC, "created"))
+                .stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto addComment(CommentDto commentDto, Long itemId, Long userId) {
+        User user = getUserOrElseThrow(userRepository.findById(userId), userId);
+        Item item = getItemOrElseThrow(itemRepository.findById(itemId), itemId);
+        Booking booking = bookingRepository.findFirstByItem_idAndBooker_IdAndEndBefore(
+                itemId,
+                userId,
+                LocalDateTime.now()
+        );
+        if (booking != null) {
+            Comment comment = Comment.builder()
+                    .id(commentDto.getId())
+                    .text(commentDto.getText())
+                    .item(item)
+                    .author(user)
+                    .created(LocalDateTime.now())
+                    .build();
+            return CommentMapper.toCommentDto(commentRepository.save(comment));
+        } else {
+            throw new CommentCreateException("Пользователь не бранировал вещь");
         }
     }
 

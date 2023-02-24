@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Objects;
 
 @Builder
@@ -40,6 +41,16 @@ public class ItemDto {
 
     @Schema(description = "Запрос на вещь")
     ItemRequest request;
+
+    List<CommentDto> comments;
+
+    public List<CommentDto> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentDto> comments) {
+        this.comments = comments;
+    }
 
     BookingShortDto lastBooking;
     BookingShortDto nextBooking;

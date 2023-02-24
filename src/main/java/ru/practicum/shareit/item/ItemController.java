@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.servlet.http.HttpServletRequest;
@@ -125,5 +126,18 @@ public class ItemController {
         log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
                 request.getRequestURL());
         return new ResponseEntity<>(itemService.getItemsBySearch(text), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/{itemId}/comment")
+    public ResponseEntity<?> addComment(@PathVariable(value = "itemId") Long itemId, 
+                                        @RequestHeader(X_HEADER) Long authorId,
+                                        @Valid @RequestBody CommentDto commentDto,
+                                        HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
+                request.getRequestURL());
+        return new ResponseEntity<>(
+                itemService.addComment(commentDto, itemId, authorId),
+                HttpStatus.OK
+        );
     }
 }
