@@ -218,8 +218,8 @@ public class BookingServiceImpl implements BookingService {
                         "Unknown state: " + state
                 );
         }
-        return bookings.
-                stream()
+        return bookings
+                .stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }

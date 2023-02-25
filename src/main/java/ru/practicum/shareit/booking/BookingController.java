@@ -31,6 +31,7 @@ public class BookingController {
     public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
     }
+
     @Operation(
             summary = "Создание брони",
             description = "Создание брони на вещь"

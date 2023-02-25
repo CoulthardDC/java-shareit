@@ -18,7 +18,6 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.User;
 
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,6 +53,7 @@ public class ItemServiceImpl implements ItemService {
         }
         itemRepository.deleteById(itemId);
     }
+
     @Override
     public ItemDto addItem(ItemDto itemDto, Long ownerId) {
         User owner = getUserOrElseThrow(userRepository.findById(ownerId), ownerId);

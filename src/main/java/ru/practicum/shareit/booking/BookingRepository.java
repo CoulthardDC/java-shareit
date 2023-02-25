@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     public List<Booking> findByBookerId(Long bookerId, Sort sort);
+
     public List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfter(Long bookerId,
                                                                      LocalDateTime start,
                                                                      LocalDateTime end,
