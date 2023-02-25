@@ -128,8 +128,20 @@ public class ItemController {
         return new ResponseEntity<>(itemService.getItemsBySearch(text), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Добавление комментария",
+            description = "Добавление комментария к вещи после аренды"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CommentDto.class))
+    )
     @PostMapping(value = "/{itemId}/comment")
-    public ResponseEntity<?> addComment(@PathVariable(value = "itemId") Long itemId, 
+    public ResponseEntity<?> addComment(@PathVariable(value = "itemId")
+                                            @Parameter(description = "id пользователя",
+                                                    required = true)
+                                            long itemId,
                                         @RequestHeader(X_HEADER) Long authorId,
                                         @Valid @RequestBody CommentDto commentDto,
                                         HttpServletRequest request) {

@@ -13,18 +13,24 @@ import java.util.Objects;
 
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Schema(description = "Сущность бронирования")
+@Schema(description = "Представление бронирования")
 public class BookingDto {
+    @Schema(description = "Идентификатор брони", example = "1")
     Long id;
 
+    @Schema(description = "Дата и время начала брони")
     LocalDateTime start;
 
+    @Schema(description = "Дата и время окончания брони")
     LocalDateTime end;
 
+    @Schema(description = "Представление вещи для бронирования")
     ItemDto item;
 
+    @Schema(description = "Представление пользователя, открывающего бронь")
     UserDto booker;
 
+    @Schema(description = "Статус брони")
     Status status;
 
     public Long getId() {

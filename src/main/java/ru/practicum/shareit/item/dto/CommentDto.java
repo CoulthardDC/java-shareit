@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,17 +15,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Schema(description = "Представление комментария")
 public class CommentDto {
+    @Schema(description = "Идентификатор комментария", example = "1")
     Long id;
 
     @NotBlank
     @NotEmpty
+    @Schema(description = "Текст комментария", example = "Хорошая вещь")
     String text;
 
+    @Schema(description = "Идентификатор вещи", example = "2")
     Long itemId;
 
+    @Schema(description = "Идентификатор автора", example = "3")
     String authorName;
 
+    @Schema(description = "Дата создания комментария")
     LocalDateTime created;
 
     public Long getId() {

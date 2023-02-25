@@ -19,6 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Schema(description = "Модель вещи")
 @Entity
 @Table(name = "items")
 public class Item {

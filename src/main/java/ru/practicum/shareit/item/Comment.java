@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +18,11 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Schema(description = "Модель комментария")
 @Entity
 @Table(name = "comments")
 public class Comment {
+    @Schema(description = "Идентификатор комментария", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
@@ -28,16 +31,20 @@ public class Comment {
     @NotBlank
     @NotEmpty
     @Column(name = "comment_text")
+    @Schema(description = "Текст комментария", example = "Хорошая вещь")
     String text;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
+    @Schema(description = "Модель вещи")
     Item item;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
+    @Schema(description = "Автор комментария")
     User author;
 
+    @Schema(description = "Дата создания комментария")
     LocalDateTime created;
 
     public Long getId() {
