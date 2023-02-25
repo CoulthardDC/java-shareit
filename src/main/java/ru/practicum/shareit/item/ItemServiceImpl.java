@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -90,6 +91,9 @@ public class ItemServiceImpl implements ItemService {
         ItemDto itemDto = ItemMapper.toItemDto(item);
         if (userId.equals(item.getOwner().getId())) {
             setBookingForItemDto(itemDto);
+        } else {
+            itemDto.setLastBooking(null);
+            itemDto.setNextBooking(null);
         }
         itemDto.setComments(
                 commentRepository.findAllByItem_Id(itemId,
@@ -188,9 +192,10 @@ public class ItemServiceImpl implements ItemService {
             lastBookingDto = BookingMapper.toBookingShortDto(lastBooking);
         }
 
-        Booking nextBooking = bookingRepository.findFirstByItem_IdAndStartAfterOrderByStartAsc(
+        Booking nextBooking = bookingRepository.findFirstByItem_IdAndStartAfterAndStatusNotOrderByStartAsc(
                 itemDto.getId(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                Status.REJECTED
         );
         BookingShortDto nextBookingDto;
         if (nextBooking == null) {
