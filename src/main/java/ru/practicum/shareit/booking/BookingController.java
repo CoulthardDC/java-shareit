@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -94,6 +95,14 @@ public class BookingController {
         );
     }
 
+    @Operation(
+            summary = "Получение броней по параметру state",
+            description = "Получение броней пользователя по параметру state"
+    )
+    @ApiResponse(
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = BookingDto.class)))
+    )
     @GetMapping
     public ResponseEntity<?> findBookings(
             @RequestParam(value = "state", defaultValue = "ALL") String state,
@@ -107,6 +116,14 @@ public class BookingController {
         );
     }
 
+    @Operation(
+            summary = "Получение броней всех вещей владельца по параметру state",
+            description = "Получение броней всех вещей владельцп по параметру state"
+    )
+    @ApiResponse(
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = BookingDto.class)))
+    )
     @GetMapping(value = "/owner")
     public ResponseEntity<?> findBookingsOwner(
             @RequestParam(value = "state", defaultValue = "ALL") String state,
