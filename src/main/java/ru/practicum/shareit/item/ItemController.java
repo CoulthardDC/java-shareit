@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -42,10 +41,8 @@ public class ItemController {
                     schema = @Schema(implementation = ItemDto.class)))
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ItemDto itemDto,
-                                    @RequestHeader(X_HEADER) long ownerId,
-                                    HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                    @RequestHeader(X_HEADER) long ownerId) {
+        log.info("Получен запрос к эндпоинту: {} /items", "POST");
         return new ResponseEntity<>(itemService.addItem(itemDto, ownerId), HttpStatus.OK);
     }
 
@@ -63,10 +60,8 @@ public class ItemController {
                                     @PathVariable(value = "itemId")
                                     @Parameter(description = "id вещи",
                                             required = true)
-                                    long itemId,
-                                    HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                    long itemId) {
+        log.info("Получен запрос к эндпоинту: {} /items/{}", "PATCH", itemId);
         return new ResponseEntity<>(itemService.updateItem(itemDto, itemId, ownerId),
                 HttpStatus.OK);
     }
@@ -84,10 +79,8 @@ public class ItemController {
                                           @Parameter(description = "id вещи",
                                                   required = true)
                                           long itemId,
-                                          @RequestHeader(X_HEADER) Long userId,
-                                          HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                          @RequestHeader(X_HEADER) Long userId) {
+        log.info("Получен запрос к эндпоинту: {} /items/{}", "GET", itemId);
         return new ResponseEntity<>(
                 itemService.getItemById(itemId, userId),
                 HttpStatus.OK);
@@ -103,10 +96,8 @@ public class ItemController {
                     array = @ArraySchema(schema =
                     @Schema(implementation = ItemDto.class))))
     @GetMapping
-    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId,
-                                              HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId) {
+        log.info("Получен запрос к эндпоинту: {} /items", "GET");
         return new ResponseEntity<>(itemService.getItemsByOwner(ownerId), HttpStatus.OK);
     }
 
@@ -121,10 +112,8 @@ public class ItemController {
                     @Schema(implementation = ItemDto.class))))
     @GetMapping(value = "/search")
     public ResponseEntity<?> searchItems(
-            @RequestParam(value = "text", defaultValue = "") String text,
-            HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+            @RequestParam(value = "text", defaultValue = "") String text) {
+        log.info("Получен запрос к эндпоинту: {} /items/search", "GET");
         return new ResponseEntity<>(itemService.getItemsBySearch(text), HttpStatus.OK);
     }
 
@@ -143,10 +132,9 @@ public class ItemController {
                                                     required = true)
                                             long itemId,
                                         @RequestHeader(X_HEADER) Long authorId,
-                                        @Valid @RequestBody CommentDto commentDto,
-                                        HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                        @Valid @RequestBody CommentDto commentDto) {
+        log.info("Получен запрос к эндпоинту: {} {}", "POST",
+                String.format("%d/comment", itemId));
         return new ResponseEntity<>(
                 itemService.addComment(commentDto, itemId, authorId),
                 HttpStatus.OK

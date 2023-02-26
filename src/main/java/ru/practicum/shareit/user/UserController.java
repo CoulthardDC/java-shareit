@@ -14,9 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.UserService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -42,9 +40,8 @@ public class UserController {
                     array = @ArraySchema(schema =
                     @Schema(implementation = UserDto.class))))
     @GetMapping
-    public ResponseEntity<?> findAll(HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+    public ResponseEntity<?> findAll() {
+        log.info("Получен запрос к эндпоинту: {} {}", "GET", "/users");
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
@@ -60,10 +57,8 @@ public class UserController {
     public ResponseEntity<?> findUserById(@PathVariable(value = "id")
                                               @Parameter(description = "id пользователя",
                                                       required = true)
-                                              long userId,
-                                          HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                              long userId) {
+        log.info("Получен запрос к эндпоинту: {} /users/{}", "GET",userId);
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
 
@@ -76,10 +71,8 @@ public class UserController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = UserDto.class)))
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> create(@Valid @RequestBody UserDto userDto,
-                                    HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+    public ResponseEntity<?> create(@Valid @RequestBody UserDto userDto) {
+        log.info("Получен запрос к эндпоинту: {} /users", "POST");
         return new ResponseEntity<>(userService.addUser(userDto), HttpStatus.CREATED);
     }
 
@@ -97,10 +90,8 @@ public class UserController {
                                                 required = true)
                                         long userId,
                                     @RequestBody
-                                    UserDto userDto,
-                                    HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                    UserDto userDto) {
+        log.info("Получен запрос к эндпоинту: {} /users/{}", "PATCH", userId);
         return new ResponseEntity<>(userService.updateUser(userDto, userId), HttpStatus.OK);
     }
 
@@ -111,11 +102,9 @@ public class UserController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> removeUser(@PathVariable(value = "id")
                                             @Parameter (description = "id пользователя")
-                                            long userId,
-                                        HttpServletRequest request) {
+                                            long userId) {
         userService.removeUser(userId);
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+        log.info("Получен запрос к эндпоинту: {} /users/{}", "DELETE", userId);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

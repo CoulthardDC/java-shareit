@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -43,10 +42,8 @@ public class BookingController {
     )
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody BookingInputDto bookingDto,
-                                    @RequestHeader(X_HEADER) long bookerId,
-                                    HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                    @RequestHeader(X_HEADER) long bookerId) {
+        log.info("Получен запрос к эндпоинту: {} /bookings", "POST");
         return new ResponseEntity<>(
                 bookingService.addBooking(bookingDto, bookerId),
                 HttpStatus.OK
@@ -66,10 +63,8 @@ public class BookingController {
                                         @Parameter(description = "id брони")
                                         Long bookingId,
                                     @RequestHeader(X_HEADER) Long userId,
-                                    @RequestParam(value = "approved") Boolean approved,
-                                    HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                    @RequestParam(value = "approved") Boolean approved) {
+        log.info("Получен запрос к эндпоинту: {} /bookings/{}", "PATCH", bookingId);
         return new ResponseEntity<>(
                 bookingService.updateBooking(bookingId, userId, approved),
                 HttpStatus.OK
@@ -86,10 +81,8 @@ public class BookingController {
     )
     @GetMapping(value = "/{bookingId}")
     public ResponseEntity<?> findBookingById(@PathVariable(value = "bookingId") Long bookingId,
-                                             @RequestHeader(X_HEADER) Long userId,
-                                             HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+                                             @RequestHeader(X_HEADER) Long userId) {
+        log.info("Получен запрос к эндпоинту: {} /bookings/{}", "GET", bookingId);
         return new ResponseEntity<>(
                 bookingService.getBookingById(bookingId, userId),
                 HttpStatus.OK
@@ -107,10 +100,8 @@ public class BookingController {
     @GetMapping
     public ResponseEntity<?> findBookings(
             @RequestParam(value = "state", defaultValue = "ALL") String state,
-            @RequestHeader(X_HEADER) Long userId,
-            HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+            @RequestHeader(X_HEADER) Long userId) {
+        log.info("Получен запрос к эндпоинту: {} /bookings", "GET");
         return new ResponseEntity<>(
                 bookingService.getBookings(state, userId),
                 HttpStatus.OK
@@ -128,10 +119,8 @@ public class BookingController {
     @GetMapping(value = "/owner")
     public ResponseEntity<?> findBookingsOwner(
             @RequestParam(value = "state", defaultValue = "ALL") String state,
-            @RequestHeader(X_HEADER) Long userId,
-            HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: {} {}", request.getMethod(),
-                request.getRequestURL());
+            @RequestHeader(X_HEADER) Long userId) {
+        log.info("Получен запрос к эндпоинту: {} /bookings/owner", "GET");
         return new ResponseEntity<>(
                 bookingService.getBookingsOwner(state, userId),
                 HttpStatus.OK
