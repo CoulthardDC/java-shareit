@@ -46,6 +46,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingDto.getItemId()
         );
         Booking booking = bookingMapper.toBooking(bookingDto, user, item);
+        booking.setStatus(Status.WAITING);
         if (userId.equals(booking.getItem().getOwner().getId())) {
             throw new PermissionException("Вещь с ID=" + bookingDto.getItemId() +
                     " недоступна для бронирования самим владельцем!");

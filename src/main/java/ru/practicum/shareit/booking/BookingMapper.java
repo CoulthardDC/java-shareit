@@ -19,7 +19,6 @@ public abstract class BookingMapper {
                 .end(bookingInputDto.getEnd())
                 .item(item)
                 .booker(user)
-                .status(Status.WAITING)
                 .build();
     }
 
