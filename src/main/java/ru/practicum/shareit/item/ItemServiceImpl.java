@@ -37,6 +37,8 @@ public class ItemServiceImpl implements ItemService {
 
     private final BookingMapper bookingMapper;
 
+    private final CommentMapper commentMapper;
+
 
     @Autowired
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -45,7 +47,8 @@ public class ItemServiceImpl implements ItemService {
                            CommentRepository commentRepository,
                            UserMapper userMapper,
                            ItemMapper itemMapper,
-                           BookingMapper bookingMapper) {
+                           BookingMapper bookingMapper,
+                           CommentMapper commentMapper) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
@@ -53,6 +56,7 @@ public class ItemServiceImpl implements ItemService {
         this.userMapper = userMapper;
         this.itemMapper = itemMapper;
         this.bookingMapper = bookingMapper;
+        this.commentMapper = commentMapper;
     }
 
     @Override
@@ -109,7 +113,7 @@ public class ItemServiceImpl implements ItemService {
                 commentRepository.findAllByItem_Id(itemId,
                                 Sort.by(Sort.Direction.DESC, "created"))
                         .stream()
-                        .map(CommentMapper::toCommentDto)
+                        .map(commentMapper::toCommentDto)
                         .collect(Collectors.toList())
         );
         return itemDto;
@@ -128,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
                         commentRepository.findAllByItem_Id(itemDto.getId(),
                                         Sort.by(Sort.Direction.DESC, "created"))
                                 .stream()
-                                .map(CommentMapper::toCommentDto)
+                                .map(commentMapper::toCommentDto)
                                 .collect(Collectors.toList()))
         );
         return items;
@@ -151,7 +155,7 @@ public class ItemServiceImpl implements ItemService {
     public List<CommentDto> getCommentsByItemId(Long itemId) {
         return commentRepository.findAllByItem_Id(itemId, Sort.by(Sort.Direction.DESC, "created"))
                 .stream()
-                .map(CommentMapper::toCommentDto)
+                .map(commentMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
 
@@ -172,7 +176,7 @@ public class ItemServiceImpl implements ItemService {
                     .author(user)
                     .created(LocalDateTime.now())
                     .build();
-            return CommentMapper.toCommentDto(commentRepository.save(comment));
+            return commentMapper.toCommentDto(commentRepository.save(comment));
         } else {
             throw new CommentCreateException("Пользователь не бранировал вещь");
         }

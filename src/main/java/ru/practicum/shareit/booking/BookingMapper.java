@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
@@ -24,5 +25,6 @@ abstract public class BookingMapper {
 
     public abstract BookingDto toBookingDto(Booking booking);
 
+    @Mapping(target = "bookerId", source = "booking.booker.id")
     public abstract BookingShortDto toBookingShortDto (Booking booking);
 }
