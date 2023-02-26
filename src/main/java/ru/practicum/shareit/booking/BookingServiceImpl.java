@@ -25,14 +25,17 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final BookingMapper bookingMapper;
 
     @Autowired
     public BookingServiceImpl(BookingRepository bookingRepository,
                               UserRepository userRepository,
-                              ItemRepository itemRepository) {
+                              ItemRepository itemRepository,
+                              BookingMapper bookingMapper) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
+        this.bookingMapper = bookingMapper;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
                 itemRepository.findById(bookingDto.getItemId()),
                 bookingDto.getItemId()
         );
-        Booking booking = BookingMapper.toBooking(bookingDto, user, item);
+        Booking booking = bookingMapper.toBooking(bookingDto, user, item);
         if (userId.equals(booking.getItem().getOwner().getId())) {
             throw new PermissionException("Вещь с ID=" + bookingDto.getItemId() +
                     " недоступна для бронирования самим владельцем!");
@@ -50,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStart().isAfter(booking.getEnd())) {
             throw new ValidationException("Время начала аренды позже времени окончания");
         }
-        return BookingMapper.toBookingDto(bookingRepository.save(booking));
+        return bookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -90,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException("Подтвердить бронирование может только владелец вещи!");
             }
         }
-        return BookingMapper.toBookingDto(bookingRepository.save(booking));
+        return bookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -102,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
         );
         if (booking.getBooker().getId().equals(userId) ||
                 booking.getItem().getOwner().getId().equals(userId)) {
-            return BookingMapper.toBookingDto(booking);
+            return bookingMapper.toBookingDto(booking);
         } else {
             throw new UserNotFoundException(userId);
         }
@@ -161,7 +164,7 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookings
                 .stream()
-                .map(BookingMapper::toBookingDto)
+                .map(bookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }
 
@@ -220,7 +223,7 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookings
                 .stream()
-                .map(BookingMapper::toBookingDto)
+                .map(bookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }
 

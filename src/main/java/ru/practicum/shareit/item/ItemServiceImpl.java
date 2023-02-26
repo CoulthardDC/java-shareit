@@ -32,17 +32,27 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final UserMapper userMapper;
+    private final ItemMapper itemMapper;
+
+    private final BookingMapper bookingMapper;
 
 
     @Autowired
     public ItemServiceImpl(ItemRepository itemRepository,
                            UserRepository userRepository,
                            BookingRepository bookingRepository,
-                           CommentRepository commentRepository) {
+                           CommentRepository commentRepository,
+                           UserMapper userMapper,
+                           ItemMapper itemMapper,
+                           BookingMapper bookingMapper) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.userMapper = userMapper;
+        this.itemMapper = itemMapper;
+        this.bookingMapper = bookingMapper;
     }
 
     @Override
@@ -58,11 +68,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(ItemDto itemDto, Long ownerId) {
         User owner = getUserOrElseThrow(userRepository.findById(ownerId), ownerId);
-        itemDto.setOwner(UserMapper.toUserDto(owner));
-        Item updateItem = ItemMapper.toItem(itemDto);
+        itemDto.setOwner(userMapper.toUserDto(owner));
+        Item updateItem = itemMapper.toItem(itemDto);
         Item item = itemRepository.save(updateItem);
 
-        return ItemMapper.toItemDto(item);
+        return itemMapper.toItemDto(item);
     }
 
     @Override
@@ -82,13 +92,13 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto getItemById(Long itemId, Long userId) {
         Item item = getItemOrElseThrow(itemRepository.findById(itemId), itemId);
-        ItemDto itemDto = ItemMapper.toItemDto(item);
+        ItemDto itemDto = itemMapper.toItemDto(item);
         if (userId.equals(item.getOwner().getId())) {
             setBookingForItemDto(itemDto);
         } else {
@@ -109,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getItemsByOwner(Long ownerId) {
         List<ItemDto> items = itemRepository.findByOwnerId(ownerId)
                 .stream()
-                .map(ItemMapper::toItemDto)
+                .map(itemMapper::toItemDto)
                 .sorted(Comparator.comparing(ItemDto::getId))
                 .collect(Collectors.toList());
         items.forEach(this::setBookingForItemDto);
@@ -130,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
             text = text.toLowerCase();
             return itemRepository.getItemsBySearchQuery(text)
                     .stream()
-                    .map(ItemMapper::toItemDto)
+                    .map(itemMapper::toItemDto)
                     .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
@@ -189,7 +199,7 @@ public class ItemServiceImpl implements ItemService {
         if (lastBooking == null) {
             lastBookingDto = null;
         } else {
-            lastBookingDto = BookingMapper.toBookingShortDto(lastBooking);
+            lastBookingDto = bookingMapper.toBookingShortDto(lastBooking);
         }
 
         Booking nextBooking = bookingRepository.findFirstByItem_IdAndStartAfterAndStatusNotOrderByStartAsc(
@@ -201,7 +211,7 @@ public class ItemServiceImpl implements ItemService {
         if (nextBooking == null) {
             nextBookingDto = null;
         } else {
-            nextBookingDto = BookingMapper.toBookingShortDto(nextBooking);
+            nextBookingDto = bookingMapper.toBookingShortDto(nextBooking);
         }
         itemDto.setLastBooking(lastBookingDto);
         itemDto.setNextBooking(nextBookingDto);

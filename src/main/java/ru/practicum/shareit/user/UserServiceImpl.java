@@ -15,30 +15,33 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,
+                           UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
     public List<UserDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public UserDto getUserById(Long userId) {
         User user = getUserOrElseThrow(userRepository.findById(userId), userId);
-        return UserMapper.toUserDto(user);
+        return userMapper.toUserDto(user);
     }
 
     @Override
     public UserDto addUser(UserDto userDto) {
         try {
-            return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
+            return userMapper.toUserDto(userRepository.save(userMapper.toUser(userDto)));
         } catch (DataIntegrityViolationException e) {
             throw new UserCreateException();
         }
@@ -65,7 +68,7 @@ public class UserServiceImpl implements UserService {
             }
 
         }
-        return UserMapper.toUserDto(userRepository.save(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
@@ -80,12 +83,6 @@ public class UserServiceImpl implements UserService {
     private User getUserOrElseThrow(Optional<User> optionalUser, Long userId) {
         return optionalUser.orElseThrow(
                 () -> new UserNotFoundException(userId)
-        );
-    }
-
-    private User createOrElseThrow(Optional<User> optionalUser) {
-        return optionalUser.orElseThrow(
-                UserCreateException::new
         );
     }
 }
