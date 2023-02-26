@@ -9,5 +9,5 @@ import ru.practicum.shareit.item.dto.CommentDto;
 public interface CommentMapper {
     @Mapping(target = "itemId", source = "comment.item.id")
     @Mapping(target = "authorName", source = "comment.author.name")
-    CommentDto toCommentDto (Comment comment);
+    CommentDto toCommentDto(Comment comment);
 }

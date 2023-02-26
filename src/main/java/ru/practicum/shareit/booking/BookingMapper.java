@@ -11,7 +11,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.User;
 
 @Mapper(componentModel = "spring", uses = {ItemMapper.class, CommentMapper.class})
-abstract public class BookingMapper {
+public abstract class BookingMapper {
     public Booking toBooking(BookingInputDto bookingInputDto,
                       User user, Item item) {
         return Booking.builder()
@@ -26,5 +26,5 @@ abstract public class BookingMapper {
     public abstract BookingDto toBookingDto(Booking booking);
 
     @Mapping(target = "bookerId", source = "booking.booker.id")
-    public abstract BookingShortDto toBookingShortDto (Booking booking);
+    public abstract BookingShortDto toBookingShortDto(Booking booking);
 }
