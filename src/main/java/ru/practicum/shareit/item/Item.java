@@ -52,6 +52,14 @@ public class Item {
     @Column(name = "item_available")
     Boolean available;
 
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+
     @Schema(description = "Запрос на вещь")
     @Column(name = "item_request_id")
     Long requestId;

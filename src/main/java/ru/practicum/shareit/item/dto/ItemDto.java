@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
-import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
@@ -39,8 +39,20 @@ public class ItemDto {
     @Schema(description = "Доступность вещи")
     Boolean available;
 
+    public void setAvailable(Boolean available) {
+        this.available = available;
+    }
+
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+
     @Schema(description = "Запрос на вещь")
-    ItemRequest request;
+    Long requestId;
 
     List<CommentDto> comments;
 
