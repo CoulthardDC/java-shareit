@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
@@ -120,8 +121,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByOwner(Long ownerId) {
-        List<ItemDto> items = itemRepository.findByOwnerId(ownerId)
+    public List<ItemDto> getItemsByOwner(Long ownerId, Integer from, Integer size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(from/size, size, sort);
+        List<ItemDto> items = itemRepository.findByOwnerId(ownerId, pageRequest)
                 .stream()
                 .map(itemMapper::toItemDto)
                 .sorted(Comparator.comparing(ItemDto::getId))
@@ -139,10 +142,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsBySearch(String text) {
+    public List<ItemDto> getItemsBySearch(String text, Integer from, Integer size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        PageRequest pageRequest = PageRequest.of(from/size, size, sort);
         if ((text != null) && (!text.isEmpty()) && (!text.isBlank())) {
             text = text.toLowerCase();
-            return itemRepository.getItemsBySearchQuery(text)
+            return itemRepository.getItemsBySearchQuery(text, pageRequest)
                     .stream()
                     .map(itemMapper::toItemDto)
                     .collect(Collectors.toList());

@@ -1,21 +1,17 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
-import ru.practicum.shareit.request.util.Pagination;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,36 +74,13 @@ public class ItemRequestServiceImpl implements ItemRequestService{
                 userRepository.findById(userId),
                 userId
         );
-        List<ItemRequestDto> itemRequestDtoList = new ArrayList<>();
-        Pageable pageable;
-        Page<ItemRequest> page;
-        Pagination pager = new Pagination(from, size);
-
         Sort sort = Sort.by(Sort.Direction.DESC, "created");
+        PageRequest pageRequest = PageRequest.of(from/size, size, sort);
 
-        if (size == null) {
-            List<ItemRequest> listItemRequest = requestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId);
-            itemRequestDtoList.addAll(
-                    listItemRequest
-                            .stream()
-                            .skip(from)
-                            .map(requestMapper::toItemRequestDto)
-                            .collect(Collectors.toList()));
-        } else {
-            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-                pageable =
-                        PageRequest.of(i, pager.getPageSize(), sort);
-                page = requestRepository.findAllByRequestorIdNot(userId, pageable);
-                itemRequestDtoList.addAll(page
+        List<ItemRequestDto> itemRequestDtoList = requestRepository.findAllByRequestorIdNot(userId, pageRequest)
                         .stream()
                         .map(requestMapper::toItemRequestDto)
-                        .collect(Collectors.toList()));
-                if (!page.hasNext()) {
-                    break;
-                }
-            }
-            itemRequestDtoList = itemRequestDtoList.stream().limit(size).collect(Collectors.toList());
-        }
+                        .collect(Collectors.toList());
         setItemsForRequestDto(itemRequestDtoList);
         return itemRequestDtoList;
     }

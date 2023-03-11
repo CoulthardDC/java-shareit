@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ItemRequestRepository extends PagingAndSortingRepository<ItemRequest, Long> {
+public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
     List<ItemRequest> findByRequestorId(long requestorId, Sort sort);
-    List<ItemRequest> findAllByRequestorIdNotOrderByCreatedDesc(long userId);
+
     Page<ItemRequest> findAllByRequestorIdNot(long userId, Pageable pageable);
 }

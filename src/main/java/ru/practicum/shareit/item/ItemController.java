@@ -11,15 +11,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping("/items")
 @Slf4j
+@Validated
 @Tag(name = "Item-контроллер",
         description = "Взаимодействие с вещами")
 public class ItemController {
@@ -96,9 +100,13 @@ public class ItemController {
                     array = @ArraySchema(schema =
                     @Schema(implementation = ItemDto.class))))
     @GetMapping
-    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId) {
+    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId,
+                                              @PositiveOrZero
+                                              @RequestParam (name = "from", defaultValue = "0") int from,
+                                              @Positive
+                                              @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         log.info("Получен запрос к эндпоинту: {} /items", "GET");
-        return new ResponseEntity<>(itemService.getItemsByOwner(ownerId), HttpStatus.OK);
+        return new ResponseEntity<>(itemService.getItemsByOwner(ownerId, from, size), HttpStatus.OK);
     }
 
     @Operation(
@@ -112,9 +120,13 @@ public class ItemController {
                     @Schema(implementation = ItemDto.class))))
     @GetMapping(value = "/search")
     public ResponseEntity<?> searchItems(
-            @RequestParam(value = "text", defaultValue = "") String text) {
+            @RequestParam(value = "text", defaultValue = "") String text,
+            @PositiveOrZero
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @Positive
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         log.info("Получен запрос к эндпоинту: {} /items/search", "GET");
-        return new ResponseEntity<>(itemService.getItemsBySearch(text), HttpStatus.OK);
+        return new ResponseEntity<>(itemService.getItemsBySearch(text, from, size), HttpStatus.OK);
     }
 
     @Operation(
