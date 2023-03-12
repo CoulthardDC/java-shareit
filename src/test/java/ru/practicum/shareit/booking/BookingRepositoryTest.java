@@ -12,7 +12,6 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,9 +28,6 @@ public class BookingRepositoryTest {
 
     @Autowired
     private ItemRepository itemRepository;
-
-    @Autowired
-    EntityManager manager;
 
     User user = User
             .builder()
