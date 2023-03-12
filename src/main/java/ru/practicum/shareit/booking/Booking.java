@@ -30,12 +30,10 @@ public class Booking {
     Long id;
 
     @Schema(description = "Дата начала бронирования")
-    @Future
     @Column(name = "start_date")
     LocalDateTime start;
 
     @Schema(description = "Дата окончания бронирования")
-    @FutureOrPresent
     @Column(name = "end_date")
     LocalDateTime end;
 
