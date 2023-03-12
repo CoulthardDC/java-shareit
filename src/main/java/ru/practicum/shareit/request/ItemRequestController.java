@@ -60,7 +60,7 @@ public class ItemRequestController {
     @ApiResponse(
             responseCode = "200",
             content = @Content(mediaType = "application/json",
-                    array = @ArraySchema( schema = @Schema(implementation = ItemRequestDto.class)))
+            array = @ArraySchema(schema = @Schema(implementation = ItemRequestDto.class)))
     )
     @GetMapping
     public ResponseEntity<?> getAllUsersRequests(@RequestHeader(X_HEADER) long userId) {

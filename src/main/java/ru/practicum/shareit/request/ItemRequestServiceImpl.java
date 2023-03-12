@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final ItemRequestRepository requestRepository;
     private final RequestMapper requestMapper;
@@ -36,6 +36,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         this.itemRepository = itemRepository;
         this.itemMapper = itemMapper;
     }
+
     @Override
     public ItemRequestDto addRequest(ItemRequestDto requestDto, Long userId, LocalDateTime created) {
         userExistOrElseThrow(
@@ -75,7 +76,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
                 userId
         );
         Sort sort = Sort.by(Sort.Direction.DESC, "created");
-        PageRequest pageRequest = PageRequest.of(from/size, size, sort);
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
 
         List<ItemRequestDto> itemRequestDtoList = requestRepository.findAllByRequestorIdNot(userId, pageRequest)
                         .stream()
@@ -86,7 +87,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
     }
 
     @Override
-    public ItemRequestDto getRequestById (Long requestId, Long userId) {
+    public ItemRequestDto getRequestById(Long requestId, Long userId) {
         userExistOrElseThrow(userRepository.findById(userId), userId);
         ItemRequest itemRequest =  getItemRequestOrElseThrow(
                 requestRepository.findById(requestId),

@@ -17,7 +17,7 @@ public class BookingShortDtoTest {
     private JacksonTester<BookingShortDto> json;
 
     @Test
-    public void testBookingShortDto() throws Exception{
+    public void testBookingShortDto() throws Exception {
         BookingShortDto bookingShortDto = BookingShortDto
                 .builder()
                 .id(1L)

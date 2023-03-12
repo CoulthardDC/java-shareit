@@ -33,7 +33,7 @@ public class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final static String X_HEADER = "X-Sharer-User-Id";
+    private static final String X_HEADER = "X-Sharer-User-Id";
 
     private final List<ItemDto> listItemDto = new ArrayList<>();
 

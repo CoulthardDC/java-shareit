@@ -99,7 +99,7 @@ public class BookingController {
     )
     @ApiResponse(
             content = @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = BookingDto.class)))
+            array = @ArraySchema(schema = @Schema(implementation = BookingDto.class)))
     )
     @GetMapping
     public ResponseEntity<?> findBookings(
@@ -108,7 +108,7 @@ public class BookingController {
             @PositiveOrZero
             @RequestParam(name = "from", defaultValue = "0") int from,
             @Positive
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size){
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         log.info("Получен запрос к эндпоинту: {} /bookings", "GET");
         return new ResponseEntity<>(
                 bookingService.getBookings(state, userId, from, size),

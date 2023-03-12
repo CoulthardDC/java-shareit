@@ -117,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getBookings(String state, Long userId, Integer from, Integer size) {
         userExistOrElseThrow(userRepository.findById(userId), userId);
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        PageRequest pageRequest = PageRequest.of(from/size, size, sort);
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
         List<Booking> bookings;
         switch (state) {
             case "ALL":
@@ -175,7 +175,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getBookingsOwner(String state, Long ownerId, Integer from, Integer size) {
         userExistOrElseThrow(userRepository.findById(ownerId), ownerId);
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        PageRequest pageRequest = PageRequest.of(from/size, size, sort);
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
         List<Booking> bookings;
         switch (state) {
             case "ALL":

@@ -94,7 +94,7 @@ public class BookingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id ", is(bookingDto.getId()), Long.class ))
+                    .andExpect(jsonPath("$.id ", is(bookingDto.getId()), Long.class))
                     .andExpect(jsonPath("$.start",
                             is(bookingDto.getStart().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
                     .andExpect(jsonPath("$.end",
@@ -103,7 +103,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void testFindBookings() throws Exception{
+    public void testFindBookings() throws Exception {
         Mockito.when(bookingService.getBookings(Mockito.anyString(),
                 Mockito.anyLong(),
                 Mockito.anyInt(),

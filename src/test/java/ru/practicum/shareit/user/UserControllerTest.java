@@ -32,7 +32,7 @@ public class UserControllerTest {
 
     private final List<UserDto> listUserDto = new ArrayList<>();
 
-    private final static String X_HEADER = "X-Sharer-User-Id";
+    private static final String X_HEADER = "X-Sharer-User-Id";
 
     UserDto userDto = UserDto
             .builder()
@@ -60,7 +60,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testFindUserById() throws Exception{
+    public void testFindUserById() throws Exception {
         Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(userDto);
 

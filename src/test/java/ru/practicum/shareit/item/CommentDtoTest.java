@@ -17,7 +17,7 @@ public class CommentDtoTest {
     private JacksonTester<CommentDto> json;
 
     @Test
-    public void testCommentDto() throws Exception{
+    public void testCommentDto() throws Exception {
         CommentDto commentDto = CommentDto
                 .builder()
                 .id(1L)
