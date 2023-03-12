@@ -67,13 +67,16 @@ public class BookingRepositoryTest {
         user.setId(null);
         user = userRepository.save(user);
 
+        booker.setId(null);
+        booker = userRepository.save(booker);
+
         item.setId(null);
         item.setOwner(user);
         item = itemRepository.save(item);
 
         booking.setId(null);
         booking.setItem(item);
-        booker = userRepository.save(booker);
+
     }
 
     @Test
