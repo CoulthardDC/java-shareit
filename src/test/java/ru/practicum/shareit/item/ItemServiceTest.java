@@ -82,7 +82,7 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.addUser(userDto1);
         UserDto newUserDto = userService.addUser(userDto2);
         ItemDto newItemDto = itemService.addItem(itemDto, ownerDto.getId());
-        PermissionException exp = assertThrows(PermissionException.class,
+        assertThrows(PermissionException.class,
                 () -> itemService.removeItem(newItemDto.getId(), newUserDto.getId()));
     }
 
@@ -91,14 +91,14 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.addUser(userDto1);
         ItemDto newItemDto = itemService.addItem(itemDto, ownerDto.getId());
         itemService.removeItem(newItemDto.getId(), ownerDto.getId());
-        ItemNotFoundException exp = assertThrows(ItemNotFoundException.class,
+        assertThrows(ItemNotFoundException.class,
                 () -> itemService.getItemById(newItemDto.getId(), ownerDto.getId()));
     }
 
     @Test
     void shouldExceptionWhenDeleteItemNotExist() {
         UserDto ownerDto = userService.addUser(userDto1);
-        ItemNotFoundException exp = assertThrows(ItemNotFoundException.class,
+        assertThrows(ItemNotFoundException.class,
                 () -> itemService.removeItem(-2L, ownerDto.getId()));
     }
 
@@ -120,7 +120,7 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.addUser(userDto1);
         UserDto newUserDto = userService.addUser(userDto2);
         ItemDto newItemDto = itemService.addItem(itemDto, ownerDto.getId());
-        ItemNotFoundException exp = assertThrows(ItemNotFoundException.class,
+        assertThrows(ItemNotFoundException.class,
                 () -> itemService.updateItem(newItemDto, newItemDto.getId(), newUserDto.getId()));
     }
 
@@ -155,7 +155,7 @@ public class ItemServiceTest {
                 .authorName(newUserDto.getName())
                 .created(LocalDateTime.now())
                 .build();
-        CommentCreateException exp = assertThrows(CommentCreateException.class,
+        assertThrows(CommentCreateException.class,
                 () -> itemService.addComment(commentDto, newItemDto.getId(), newUserDto.getId()));
     }
 
