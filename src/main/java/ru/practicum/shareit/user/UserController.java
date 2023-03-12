@@ -67,7 +67,7 @@ public class UserController {
             description = "Создание пользователя с уникальным id"
     )
     @ApiResponse(
-            responseCode = "200",
+            responseCode = "201",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = UserDto.class)))
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
