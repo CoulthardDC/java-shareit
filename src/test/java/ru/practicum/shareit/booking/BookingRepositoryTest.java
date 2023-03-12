@@ -154,7 +154,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void TestFindByBookerIdAndStatus() {
+    public void testFindByBookerIdAndStatus() {
         bookingRepository.save(booking);
 
         List<Booking> bookings = bookingRepository.findByBookerIdAndStatus(
