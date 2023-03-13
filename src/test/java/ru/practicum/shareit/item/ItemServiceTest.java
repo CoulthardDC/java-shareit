@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exception.PermissionException;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -190,5 +191,38 @@ public class ItemServiceTest {
 
         itemService.addComment(commentDto, newItemDto.getId(), newUserDto.getId());
         Assertions.assertEquals(1, itemService.getCommentsByItemId(newItemDto.getId()).size());
+    }
+
+    @Test
+    public void shouldSetLastAndNextBookingNullWhenNotOwner() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        UserDto newUserDto = userService.addUser(userDto2);
+        ItemDto newItemDto = itemService.addItem(itemDto, ownerDto.getId());
+
+        ItemDto savedItem = itemService.getItemById(newItemDto.getId(), newUserDto.getId());
+
+        Assertions.assertNull(savedItem.getLastBooking());
+        Assertions.assertNull(savedItem.getNextBooking());
+    }
+
+    @Test
+    public void shouldReturnEmptyListWhenSearchIsBlank() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        UserDto newUserDto = userService.addUser(userDto2);
+        ItemDto newItemDto = itemService.addItem(itemDto, ownerDto.getId());
+
+        List<ItemDto> result = itemService.getItemsBySearch(
+                null,
+                0,
+                10
+        );
+
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void shouldExceptionWhenAddItemAnUserNotFound() {
+        Assertions.assertThrows(UserNotFoundException.class,
+                () -> itemService.addItem(itemDto, 666L));
     }
 }
