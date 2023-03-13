@@ -319,6 +319,43 @@ public class BookingServiceTest {
     }
 
     @Test
+    void shouldExceptionWhenStartEqualsEnd() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        LocalDateTime localDateTime = LocalDateTime.now().plusSeconds(10);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(localDateTime)
+                .end(localDateTime)
+                .build();
+        assertThrows(ValidationException.class,
+                () -> bookingService.addBooking(bookingInputDto, newUserDto.getId()));
+    }
+
+    @Test
+    void shouldReturnBooking() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(1))
+                .build();
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+
+        BookingDto savedBooking = bookingService.getBookingById(
+                bookingDto.getId(),
+                newUserDto.getId()
+        );
+
+        assertEquals(bookingDto.getId(), savedBooking.getId());
+    }
+
+    @Test
     void shouldExceptionWhenGetBookingByNotOwnerOrNotBooker() {
         UserDto ownerDto = userService.addUser(userDto1);
         UserDto newUserDto = userService.addUser(userDto2);
