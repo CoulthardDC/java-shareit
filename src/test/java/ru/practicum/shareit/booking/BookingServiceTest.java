@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -71,6 +72,250 @@ public class BookingServiceTest {
                 () -> bookingService.addBooking(bookingInputDto, ownerDto.getId()));
         assertEquals("Вещь с ID=" + newItemDto.getId() + " недоступна для бронирования самим владельцем!",
                 exp.getMessage());
+    }
+
+    @Test
+    void shouldExceptionWhenCreateBookingAndEndBeforeStart() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.of(2030, 12, 26, 12, 0, 0))
+                .end(LocalDateTime.of(2030, 12, 25, 12, 0, 0))
+                .build();
+
+        ValidationException exp = assertThrows(ValidationException.class,
+                () -> bookingService.addBooking(bookingInputDto, newUserDto.getId()));
+        assertEquals("Время начала аренды позже времени окончания",
+                exp.getMessage());
+    }
+
+    @Test
+    void shouldExceptionWhenUpdateAfterEnd() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(3))
+                .build();
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            return;
+        }
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+
+        ValidationException exp = assertThrows(ValidationException.class,
+                () -> bookingService.updateBooking(bookingDto.getId(), ownerDto.getId(), true));
+        assertEquals("Время бронирования истекло",
+                exp.getMessage());
+    }
+
+    @Test
+    void shouldCancelBookingAfterUpdate() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(3))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+
+        BookingDto updatedBookingDto = bookingService.updateBooking(bookingDto.getId(),
+                newUserDto.getId(), false);
+
+        assertEquals(bookingDto.getId(), updatedBookingDto.getId());
+        assertEquals(Status.CANCELED, updatedBookingDto.getStatus());
+    }
+
+    @Test
+    void shouldExceptionWhenBookerApprovedBooking() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(3))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+
+        assertThrows(PermissionException.class,
+                () -> bookingService.updateBooking(bookingDto.getId(),
+                        newUserDto.getId(), true));
+    }
+
+    @Test
+    void shouldExceptionWhenUpdateApprovedBooking() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(3))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+        BookingDto updatedBooking  = bookingService.updateBooking(bookingDto.getId(), ownerDto.getId(), true);
+        System.out.println(updatedBooking.getStatus());
+        ValidationException exp = assertThrows(ValidationException.class,
+                () -> bookingService.updateBooking(bookingDto.getId(),
+                        ownerDto.getId(), false));
+        assertEquals("Решение по бронированию уже есть", exp.getMessage());
+    }
+
+    @Test
+    void shouldSetRejectedStatusWhenUpdate() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(3))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+        BookingDto updatedBookingDto = bookingService.updateBooking(bookingDto.getId(),
+                ownerDto.getId(), false);
+        assertEquals(bookingDto.getId(), updatedBookingDto.getId());
+        assertEquals(Status.REJECTED, updatedBookingDto.getStatus());
+    }
+
+    @Test
+    void shouldExceptionWhenApprovedAndCanceled() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(3))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+        bookingService.updateBooking(bookingDto.getId(), newUserDto.getId(), false);
+
+        ValidationException exp = assertThrows(ValidationException.class,
+                () -> bookingService.updateBooking(bookingDto.getId(),
+                        ownerDto.getId(), true));
+
+        assertEquals("Бронирование было отменено!", exp.getMessage());
+    }
+
+    @Test
+    void shouldExceptionWhenBookerTryApprove() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        UserDto userDto3 = UserDto
+                .builder()
+                .email("Email@email.ru")
+                .name("name")
+                .build();
+        UserDto newUserDto1 = userService.addUser(userDto3);
+
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(3))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+
+        ValidationException exp = assertThrows(ValidationException.class,
+                () -> bookingService.updateBooking(bookingDto.getId(),
+                        newUserDto1.getId(), true));
+
+        assertEquals("Подтвердить бронирование может только владелец вещи!", exp.getMessage());
+    }
+
+    @Test
+    void shouldReturnCurrentBookings() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(10))
+                .build();
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+        List<BookingDto> result = bookingService.getBookings("CURRENT", newUserDto.getId(), 0, 10);
+        assertEquals(1, result.size());
+        assertEquals(bookingDto.getId(), result.get(0).getId());
+    }
+
+    @Test
+    void shouldReturnPastBooking() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(1))
+                .build();
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            return;
+        }
+        List<BookingDto> result = bookingService.getBookings("PAST", newUserDto.getId(), 0, 10);
+        assertEquals(1, result.size());
+        assertEquals(bookingDto.getId(), result.get(0).getId());
+    }
+
+    @Test
+    void shouldReturnFutureBookings() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now().plusSeconds(10))
+                .end(LocalDateTime.now().plusSeconds(11))
+                .build();
+        BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
+        List<BookingDto> result = bookingService.getBookings("FUTURE", newUserDto.getId(), 0, 10);
+        assertEquals(1, result.size());
+        assertEquals(bookingDto.getId(), result.get(0).getId());
+    }
+
+    @Test
+    void shouldExceptionWhenUnknownState() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now().plusSeconds(10))
+                .end(LocalDateTime.now().plusSeconds(11))
+                .build();
+        bookingService.addBooking(bookingInputDto, newUserDto.getId());
+        assertThrows(ValidationException.class,
+                () -> bookingService.getBookings("-_-", newUserDto.getId(), 0, 10));
     }
 
     @Test

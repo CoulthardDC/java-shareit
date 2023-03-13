@@ -250,20 +250,6 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void testFindFirstByItem_IdAndEndBeforeOrderByEndDesc() {
-        bookingRepository.save(booking);
-
-        Booking savedBooking = bookingRepository.findFirstByItem_IdAndEndBeforeOrderByEndDesc(
-                item.getId(),
-                LocalDateTime.of(2023, 4, 13, 12, 0)
-        );
-
-        Assertions.assertEquals(1, savedBooking.getId());
-        Assertions.assertEquals(item.getId(), savedBooking.getItem().getId());
-        Assertions.assertEquals(booker.getId(), savedBooking.getBooker().getId());
-    }
-
-    @Test
     public void testFindFirstByItem_IdAndStartAfterAndStatusNotOrderByStartAsc() {
         bookingRepository.save(booking);
 

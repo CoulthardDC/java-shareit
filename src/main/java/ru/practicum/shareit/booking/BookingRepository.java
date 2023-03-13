@@ -49,7 +49,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                       Status status,
                                                       Pageable pageable);
 
-    public Booking findFirstByItem_IdAndEndBeforeOrderByEndDesc(Long itemId,
+    public Booking findFirstByItem_IdAndStartBeforeOrderByEndDesc(Long itemId,
                                                             LocalDateTime end);
 
     public Booking findFirstByItem_IdAndStartAfterAndStatusNotOrderByStartAsc(Long itemId,

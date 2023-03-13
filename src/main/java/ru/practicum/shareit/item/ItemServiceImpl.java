@@ -201,7 +201,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void setBookingForItemDto(ItemDto itemDto) {
-        Booking lastBooking = bookingRepository.findFirstByItem_IdAndEndBeforeOrderByEndDesc(
+        Booking lastBooking = bookingRepository.findFirstByItem_IdAndStartBeforeOrderByEndDesc(
                 itemDto.getId(),
                 LocalDateTime.now()
         );

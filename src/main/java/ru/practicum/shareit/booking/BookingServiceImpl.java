@@ -54,6 +54,8 @@ public class BookingServiceImpl implements BookingService {
         }
         if (booking.getStart().isAfter(booking.getEnd())) {
             throw new ValidationException("Время начала аренды позже времени окончания");
+        } else if (booking.getStart().equals(booking.getEnd())) {
+            throw new ValidationException("Время начала аренды совпадает со временем окончания");
         }
         return bookingMapper.toBookingDto(bookingRepository.save(booking));
     }
