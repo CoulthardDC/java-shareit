@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -53,6 +54,8 @@ public class BookingServiceImpl implements BookingService {
         }
         if (booking.getStart().isAfter(booking.getEnd())) {
             throw new ValidationException("Время начала аренды позже времени окончания");
+        } else if (booking.getStart().equals(booking.getEnd())) {
+            throw new ValidationException("Время начала аренды совпадает со временем окончания");
         }
         return bookingMapper.toBookingDto(bookingRepository.save(booking));
     }
@@ -113,20 +116,21 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookings(String state, Long userId) {
+    public List<BookingDto> getBookings(String state, Long userId, Integer from, Integer size) {
         userExistOrElseThrow(userRepository.findById(userId), userId);
-        Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
         List<Booking> bookings;
         switch (state) {
             case "ALL":
-                bookings = bookingRepository.findByBookerId(userId, sortByStartDesc);
+                bookings = bookingRepository.findByBookerId(userId, pageRequest);
                 break;
             case "CURRENT":
                     bookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(
                         userId,
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "PAST":
@@ -134,28 +138,28 @@ public class BookingServiceImpl implements BookingService {
                         userId,
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "FUTURE":
                 bookings = bookingRepository.findByBookerIdAndStartIsAfter(
                         userId,
                         LocalDateTime.now(),
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "WAITING":
                 bookings = bookingRepository.findByBookerIdAndStatus(
                         userId,
                         Status.WAITING,
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "REJECTED":
                 bookings = bookingRepository.findByBookerIdAndStatus(
                         userId,
                         Status.REJECTED,
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             default:
@@ -170,15 +174,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsOwner(String state, Long ownerId) {
+    public List<BookingDto> getBookingsOwner(String state, Long ownerId, Integer from, Integer size) {
         userExistOrElseThrow(userRepository.findById(ownerId), ownerId);
-        Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
         List<Booking> bookings;
         switch (state) {
             case "ALL":
                 bookings = bookingRepository.findByItem_Owner_id(
                         ownerId,
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "CURRENT":
@@ -186,35 +191,35 @@ public class BookingServiceImpl implements BookingService {
                         ownerId,
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "PAST":
                 bookings = bookingRepository.findByItem_Owner_IdAndEndIsBefore(
                         ownerId,
                         LocalDateTime.now(),
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "FUTURE":
                 bookings = bookingRepository.findByItem_Owner_IdAndStartIsAfter(
                         ownerId,
                         LocalDateTime.now(),
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "WAITING":
                 bookings = bookingRepository.findByItem_Owner_IdAndStatus(
                         ownerId,
                         Status.WAITING,
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             case "REJECTED":
                 bookings = bookingRepository.findByItem_Owner_IdAndStatus(
                         ownerId,
                         Status.REJECTED,
-                        sortByStartDesc
+                        pageRequest
                 );
                 break;
             default:

@@ -11,9 +11,9 @@ public interface ItemService {
 
     ItemDto getItemById(Long itemId, Long userId);
 
-    List<ItemDto> getItemsByOwner(Long ownerId);
+    List<ItemDto> getItemsByOwner(Long ownerId, Integer from, Integer size);
 
-    List<ItemDto> getItemsBySearch(String text);
+    List<ItemDto> getItemsBySearch(String text, Integer from, Integer size);
 
     void removeItem(Long itemId, Long ownerId);
 

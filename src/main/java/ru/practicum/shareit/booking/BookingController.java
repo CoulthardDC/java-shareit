@@ -11,15 +11,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping("/bookings")
 @Slf4j
+@Validated
 @Tag(name = "Booking-контроллер",
         description = "Взаимодействие с бронью")
 public class BookingController {
@@ -95,15 +99,19 @@ public class BookingController {
     )
     @ApiResponse(
             content = @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = BookingDto.class)))
+            array = @ArraySchema(schema = @Schema(implementation = BookingDto.class)))
     )
     @GetMapping
     public ResponseEntity<?> findBookings(
             @RequestParam(value = "state", defaultValue = "ALL") String state,
-            @RequestHeader(X_HEADER) Long userId) {
+            @RequestHeader(X_HEADER) Long userId,
+            @PositiveOrZero
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @Positive
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         log.info("Получен запрос к эндпоинту: {} /bookings", "GET");
         return new ResponseEntity<>(
-                bookingService.getBookings(state, userId),
+                bookingService.getBookings(state, userId, from, size),
                 HttpStatus.OK
         );
     }
@@ -119,10 +127,14 @@ public class BookingController {
     @GetMapping(value = "/owner")
     public ResponseEntity<?> findBookingsOwner(
             @RequestParam(value = "state", defaultValue = "ALL") String state,
-            @RequestHeader(X_HEADER) Long userId) {
+            @RequestHeader(X_HEADER) Long userId,
+            @PositiveOrZero
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @Positive
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         log.info("Получен запрос к эндпоинту: {} /bookings/owner", "GET");
         return new ResponseEntity<>(
-                bookingService.getBookingsOwner(state, userId),
+                bookingService.getBookingsOwner(state, userId, from, size),
                 HttpStatus.OK
         );
     }

@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Builder
@@ -19,10 +20,12 @@ public class BookingInputDto {
 
     @FutureOrPresent
     @Schema(description = "Дата начала брони")
+    @NotNull
     LocalDateTime start;
 
     @Future
     @Schema(description = "Дата окончания брони")
+    @NotNull
     LocalDateTime end;
 
     public Long getItemId() {

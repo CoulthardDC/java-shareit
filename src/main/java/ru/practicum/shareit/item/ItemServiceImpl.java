@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
@@ -12,6 +13,7 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exception.CommentCreateException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.item.exception.PermissionException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.UserMapper;
@@ -64,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = getItemOrElseThrow(itemRepository.findById(itemId),
                 itemId);
         if (!item.getOwner().getId().equals(ownerId)) {
-            throw new RuntimeException("Нет прав на удаление");
+            throw new PermissionException("Нет прав на удаление");
         }
         itemRepository.deleteById(itemId);
     }
@@ -120,8 +122,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByOwner(Long ownerId) {
-        List<ItemDto> items = itemRepository.findByOwnerId(ownerId)
+    public List<ItemDto> getItemsByOwner(Long ownerId, Integer from, Integer size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
+        List<ItemDto> items = itemRepository.findByOwnerId(ownerId, pageRequest)
                 .stream()
                 .map(itemMapper::toItemDto)
                 .sorted(Comparator.comparing(ItemDto::getId))
@@ -139,10 +143,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsBySearch(String text) {
+    public List<ItemDto> getItemsBySearch(String text, Integer from, Integer size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
         if ((text != null) && (!text.isEmpty()) && (!text.isBlank())) {
             text = text.toLowerCase();
-            return itemRepository.getItemsBySearchQuery(text)
+            return itemRepository.getItemsBySearchQuery(text, pageRequest)
                     .stream()
                     .map(itemMapper::toItemDto)
                     .collect(Collectors.toList());
@@ -195,7 +201,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void setBookingForItemDto(ItemDto itemDto) {
-        Booking lastBooking = bookingRepository.findFirstByItem_IdAndEndBeforeOrderByEndDesc(
+        Booking lastBooking = bookingRepository.findFirstByItem_IdAndStartBeforeOrderByEndDesc(
                 itemDto.getId(),
                 LocalDateTime.now()
         );
