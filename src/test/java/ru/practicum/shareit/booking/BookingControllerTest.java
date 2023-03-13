@@ -10,8 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
+import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.exception.PermissionException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
+
+import javax.validation.ValidationException;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -193,5 +197,48 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.end",
                         is(bookingDto.getEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
                 .andExpect(jsonPath("$.status", is(bookingDto.getStatus().toString()), String.class));
+    }
+
+    @Test
+    public void testHandleBookingNotFoundException() throws Exception {
+        Mockito.when(bookingService.getBookingById(Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(BookingNotFoundException.class);
+
+        mvc.perform(get("/bookings/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(X_HEADER, 2)
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testHandleValidationException() throws Exception {
+        Mockito.when(bookingService.getBookingById(Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(ValidationException.class);
+
+        mvc.perform(get("/bookings/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(X_HEADER, 2)
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testHandlePermissionException() throws Exception {
+        Mockito.when(bookingService.getBookingById(Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(PermissionException.class);
+
+        mvc.perform(get("/bookings/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(X_HEADER, 2)
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", is("Ошибка доступа"), String.class));
     }
 }

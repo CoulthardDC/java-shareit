@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.exception.PermissionException;
+import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -353,6 +354,155 @@ public class BookingServiceTest {
         );
 
         assertEquals(bookingDto.getId(), savedBooking.getId());
+    }
+
+    @Test
+    void shouldReturnCurrentWhenGetByOwner() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(20))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(
+                bookingInputDto,
+                newUserDto.getId()
+        );
+
+        List<BookingDto> bookings = bookingService.getBookingsOwner(
+                "CURRENT",
+                ownerDto.getId(),
+                0,
+                10
+        );
+
+        assertEquals(1, bookings.size());
+        assertEquals(bookingDto.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void shouldReturnPastWhenGetByOwner() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusSeconds(1))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(
+                bookingInputDto,
+                newUserDto.getId()
+        );
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            return;
+        }
+
+        List<BookingDto> bookings = bookingService.getBookingsOwner(
+                "PAST",
+                ownerDto.getId(),
+                0,
+                10
+        );
+
+        assertEquals(1, bookings.size());
+        assertEquals(bookingDto.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void shouldReturnFutureWhenGetByOwner() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now().plusSeconds(10))
+                .end(LocalDateTime.now().plusSeconds(20))
+                .build();
+
+        BookingDto bookingDto = bookingService.addBooking(
+                bookingInputDto,
+                newUserDto.getId()
+        );
+
+        List<BookingDto> bookings = bookingService.getBookingsOwner(
+                "FUTURE",
+                ownerDto.getId(),
+                0,
+                10
+        );
+
+        assertEquals(1, bookings.size());
+        assertEquals(bookingDto.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void shouldExceptionWhenUnknownStateWhenGetByOwner() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        assertThrows(ValidationException.class,
+                () -> bookingService.getBookingsOwner(
+                        "-_-",
+                        ownerDto.getId(),
+                        0,
+                        10
+                ));
+    }
+
+    @Test
+    void shouldExceptionWhenAddBookingAndNotFoundUser() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now().plusSeconds(10))
+                .end(LocalDateTime.now().plusSeconds(20))
+                .build();
+
+        assertThrows(UserNotFoundException.class,
+                () -> bookingService.addBooking(bookingInputDto, 666L));
+    }
+
+    @Test
+    void shouldExceptionWhenAddBookingAndItemNotAvailable() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        itemDto1.setAvailable(false);
+        ItemDto newItemDto = itemService.addItem(itemDto1, ownerDto.getId());
+        itemDto1.setAvailable(true);
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(newItemDto.getId())
+                .start(LocalDateTime.now().plusSeconds(10))
+                .end(LocalDateTime.now().plusSeconds(20))
+                .build();
+
+        assertThrows(ValidationException.class,
+                () -> bookingService.addBooking(bookingInputDto, newUserDto.getId()));
+    }
+
+    @Test
+    void shouldExceptionWhenAddBookingAndItemNotExist() {
+        UserDto ownerDto = userService.addUser(userDto1);
+        UserDto newUserDto = userService.addUser(userDto2);
+        BookingInputDto bookingInputDto = BookingInputDto
+                .builder()
+                .itemId(666L)
+                .start(LocalDateTime.now().plusSeconds(10))
+                .end(LocalDateTime.now().plusSeconds(20))
+                .build();
+
+        assertThrows(ItemNotFoundException.class,
+                () -> bookingService.addBooking(bookingInputDto, newUserDto.getId()));
     }
 
     @Test
