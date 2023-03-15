@@ -10,6 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.exception.CommentCreateException;
+import ru.practicum.shareit.item.exception.ItemCreateException;
+import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.hamcrest.Matchers.is;
@@ -184,5 +187,61 @@ public class ItemControllerTest {
                     .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName()), String.class))
                     .andExpect(jsonPath("$.created",
                             is(commentDto.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+    }
+
+    @Test
+    public void testHandleItemNotFoundException() throws Exception {
+        Mockito.when(itemService.getItemById(Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(ItemNotFoundException.class);
+
+        mvc.perform(get("/items/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(X_HEADER, 1)
+                .content(mapper.writeValueAsString(itemDto))
+                .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", is("Вещь не найдена"), String.class));
+    }
+
+    @Test
+    public void testHandleItemCreateException() throws Exception {
+        Mockito.when(itemService.addItem(Mockito.any(), Mockito.anyLong()))
+                .thenThrow(ItemCreateException.class);
+
+        mvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(X_HEADER, 1)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", is("Ошибка при создании вещи"), String.class));
+    }
+
+    @Test
+    public void testHandleMissingRequestHeaderException() throws Exception {
+        mvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("Отсутствует необходимы заголовок"), String.class));
+    }
+
+    @Test
+    public void testHandleCommentCreateException() throws Exception {
+        Mockito.when(itemService.addComment(Mockito.any(), Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(CommentCreateException.class);
+
+        mvc.perform(post("/items/1/comment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(X_HEADER, 1)
+                        .content(mapper.writeValueAsString(commentDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("Ошибка при создании коментария"), String.class));
     }
 }

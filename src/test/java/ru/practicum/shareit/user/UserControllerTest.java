@@ -9,6 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exception.UserCreateException;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.user.exception.UserRemoveException;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -119,5 +122,82 @@ public class UserControllerTest {
                         .header(X_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testHandleValidationException() throws Exception {
+        UserDto userDto1 = UserDto
+                .builder()
+                .id(1L)
+                .email("ValidationException")
+                .name("name")
+                .build();
+        mvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(userDto1))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("Ошибка валидации"), String.class));
+    }
+
+    @Test
+    public void testHandleUserNotFoundException() throws Exception {
+        Mockito.when(userService.addUser(Mockito.any()))
+                .thenThrow(UserNotFoundException.class);
+
+        mvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", is("Пользователь не найден"), String.class));
+    }
+
+    @Test
+    public void testHandleUserCreateException() throws Exception {
+        Mockito.when(userService.addUser(Mockito.any()))
+                .thenThrow(UserCreateException.class);
+
+        mvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error", is("Ошибка при создании пользователя"), String.class));
+    }
+
+    @Test
+    public void testHandleUserRemoveException() throws Exception {
+        Mockito.doThrow(new UserRemoveException()).when(userService).removeUser(Mockito.anyLong());
+
+        mvc.perform(delete("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error", is("Ошибка при удалении пользователя"), String.class));
+
+    }
+
+    @Test
+    public void testHandleMethodArgumentNotValidException() throws Exception {
+        UserDto invalidDto = UserDto
+                .builder()
+                .id(null)
+                .email(null)
+                .name(null)
+                .build();
+
+        mvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(invalidDto))
+                        .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("Ошибка валидации"), String.class));
     }
 }

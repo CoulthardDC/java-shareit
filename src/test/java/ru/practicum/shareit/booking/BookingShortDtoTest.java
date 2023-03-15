@@ -12,20 +12,19 @@ import java.time.LocalDateTime;
 
 @JsonTest
 public class BookingShortDtoTest {
+    BookingShortDto bookingShortDto = BookingShortDto
+            .builder()
+            .id(1L)
+            .bookerId(2L)
+            .start(LocalDateTime.of(2023, 3, 11, 12, 0))
+            .end(LocalDateTime.of(2023, 3, 12, 12, 0))
+            .build();
 
     @Autowired
     private JacksonTester<BookingShortDto> json;
 
     @Test
     public void testBookingShortDto() throws Exception {
-        BookingShortDto bookingShortDto = BookingShortDto
-                .builder()
-                .id(1L)
-                .bookerId(2L)
-                .start(LocalDateTime.of(2023, 3, 11, 12, 0))
-                .end(LocalDateTime.of(2023, 3, 12, 12, 0))
-                .build();
-
         JsonContent<BookingShortDto> result = json.write(bookingShortDto);
 
         Assertions.assertThat(result)
@@ -37,4 +36,21 @@ public class BookingShortDtoTest {
         Assertions.assertThat(result)
                 .extractingJsonPathStringValue("$.end").isEqualTo("2023-03-12T12:00:00");
     }
+
+    @Test
+    public void testBookingShortSetTest() {
+        LocalDateTime localDateTimeStart = bookingShortDto.getStart();
+        LocalDateTime localDateTimeEnd = bookingShortDto.getEnd();
+
+        bookingShortDto.setId(1L);
+        bookingShortDto.setBookerId(2L);
+        bookingShortDto.setStart(localDateTimeStart);
+        bookingShortDto.setEnd(localDateTimeEnd);
+
+        org.junit.jupiter.api.Assertions.assertEquals(1L, bookingShortDto.getId());
+        org.junit.jupiter.api.Assertions.assertEquals(2L, bookingShortDto.getBookerId());
+        org.junit.jupiter.api.Assertions.assertEquals(localDateTimeStart, bookingShortDto.getStart());
+        org.junit.jupiter.api.Assertions.assertEquals(localDateTimeEnd, bookingShortDto.getEnd());
+    }
+
 }
