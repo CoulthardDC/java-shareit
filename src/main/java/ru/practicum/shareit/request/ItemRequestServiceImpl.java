@@ -6,10 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,7 +46,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         itemRequest.setCreated(created);
         itemRequest.setId(userId);
         itemRequest.setRequestor(userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(userId)));
+                () -> new NotFoundException(userId)));
         return requestMapper.toItemRequestDto(
                 requestRepository.save(itemRequest));
     }
@@ -105,13 +104,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private ItemRequest getItemRequestOrElseThrow(Optional<ItemRequest> optionalItemRequest,
                                                   Long requestId) {
         return optionalItemRequest.orElseThrow(
-                () -> new ItemRequestNotFoundException(
-                        String.format("Реквест с id = %d не найден", requestId)));
+                () -> new NotFoundException(requestId));
     }
 
     private void userExistOrElseThrow(Optional<User> optionalUser, Long userId) {
         optionalUser.orElseThrow(
-                () -> new UserNotFoundException(userId));
+                () -> new NotFoundException(userId));
     }
 
     private void setItemsForRequestDto(List<ItemRequestDto> itemRequestDto) {

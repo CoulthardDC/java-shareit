@@ -6,14 +6,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
-import ru.practicum.shareit.booking.exception.BookingNotFoundException;
-import ru.practicum.shareit.booking.exception.PermissionException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.PermissionException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
@@ -111,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
                 booking.getItem().getOwner().getId().equals(userId)) {
             return bookingMapper.toBookingDto(booking);
         } else {
-            throw new UserNotFoundException(userId);
+            throw new NotFoundException(userId);
         }
     }
 
@@ -236,20 +234,20 @@ public class BookingServiceImpl implements BookingService {
     private Booking getBookingOrElseThrow(Optional<Booking> optionalBooking,
                                           Long bookingId) {
         return optionalBooking.orElseThrow(
-                () -> new BookingNotFoundException(bookingId)
+                () -> new NotFoundException(bookingId)
         );
     }
 
     private User getUserOrElseThrow(Optional<User> optionalUser, Long userId) {
         return optionalUser.orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new NotFoundException(userId)
         );
     }
 
     private Item getAvailableItemOrElseThrow(Optional<Item> optionalItem,
                                              Long itemId) {
         Item item = optionalItem.orElseThrow(
-                () -> new ItemNotFoundException(itemId)
+                () -> new NotFoundException(itemId)
         );
         if (item.getAvailable()) {
             return item;
@@ -262,7 +260,7 @@ public class BookingServiceImpl implements BookingService {
 
     private void userExistOrElseThrow(Optional<User> optionalUser, Long userId) {
         optionalUser.orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new NotFoundException(userId)
         );
     }
 

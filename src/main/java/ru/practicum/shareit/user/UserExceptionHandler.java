@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.user.dto.ErrorDto;
-import ru.practicum.shareit.user.exception.UserCreateException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
-import ru.practicum.shareit.user.exception.UserRemoveException;
+import ru.practicum.shareit.exception.CreateException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.RemoveException;
 
 import javax.validation.ValidationException;
 
-@RestControllerAdvice("ru.practicum.shareit")
+@RestControllerAdvice("ru.practicum.shareit.user")
 @Slf4j
 public class UserExceptionHandler {
     @ExceptionHandler
@@ -25,21 +25,21 @@ public class UserExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorDto handleUserNotFoundException(final UserNotFoundException e) {
+    public ErrorDto handleUserNotFoundException(final NotFoundException e) {
         log.warn(e.getMessage());
         return new ErrorDto("Пользователь не найден", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorDto handleUserCreateException(final UserCreateException e) {
+    public ErrorDto handleUserCreateException(final CreateException e) {
         log.warn(e.getMessage());
         return new ErrorDto("Ошибка при создании пользователя", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorDto handleUserRemoveException(final UserRemoveException e) {
+    public ErrorDto handleUserRemoveException(final RemoveException e) {
         log.warn(e.getMessage());
         return new ErrorDto("Ошибка при удалении пользователя", e.getMessage());
     }

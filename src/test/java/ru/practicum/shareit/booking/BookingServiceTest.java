@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.exception.PermissionException;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.PermissionException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserService;
@@ -468,7 +467,7 @@ public class BookingServiceTest {
                 .end(LocalDateTime.now().plusSeconds(20))
                 .build();
 
-        assertThrows(UserNotFoundException.class,
+        assertThrows(NotFoundException.class,
                 () -> bookingService.addBooking(bookingInputDto, 666L));
     }
 
@@ -501,7 +500,7 @@ public class BookingServiceTest {
                 .end(LocalDateTime.now().plusSeconds(20))
                 .build();
 
-        assertThrows(ItemNotFoundException.class,
+        assertThrows(NotFoundException.class,
                 () -> bookingService.addBooking(bookingInputDto, newUserDto.getId()));
     }
 
@@ -528,7 +527,7 @@ public class BookingServiceTest {
                 .build();
 
         BookingDto bookingDto = bookingService.addBooking(bookingInputDto, newUserDto.getId());
-        assertThrows(UserNotFoundException.class,
+        assertThrows(NotFoundException.class,
                 () -> bookingService.getBookingById(bookingDto.getId(), userId));
     }
 

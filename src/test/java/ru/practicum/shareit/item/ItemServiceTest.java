@@ -9,14 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
-import ru.practicum.shareit.item.exception.CommentCreateException;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.CommentCreateException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.exception.PermissionException;
+import ru.practicum.shareit.exception.PermissionException;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -92,14 +91,14 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.addUser(userDto1);
         ItemDto newItemDto = itemService.addItem(itemDto, ownerDto.getId());
         itemService.removeItem(newItemDto.getId(), ownerDto.getId());
-        assertThrows(ItemNotFoundException.class,
+        assertThrows(NotFoundException.class,
                 () -> itemService.getItemById(newItemDto.getId(), ownerDto.getId()));
     }
 
     @Test
     void shouldExceptionWhenDeleteItemNotExist() {
         UserDto ownerDto = userService.addUser(userDto1);
-        assertThrows(ItemNotFoundException.class,
+        assertThrows(NotFoundException.class,
                 () -> itemService.removeItem(-2L, ownerDto.getId()));
     }
 
@@ -121,7 +120,7 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.addUser(userDto1);
         UserDto newUserDto = userService.addUser(userDto2);
         ItemDto newItemDto = itemService.addItem(itemDto, ownerDto.getId());
-        assertThrows(ItemNotFoundException.class,
+        assertThrows(NotFoundException.class,
                 () -> itemService.updateItem(newItemDto, newItemDto.getId(), newUserDto.getId()));
     }
 
@@ -222,7 +221,7 @@ public class ItemServiceTest {
 
     @Test
     public void shouldExceptionWhenAddItemAnUserNotFound() {
-        Assertions.assertThrows(UserNotFoundException.class,
+        Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.addItem(itemDto, 666L));
     }
 }

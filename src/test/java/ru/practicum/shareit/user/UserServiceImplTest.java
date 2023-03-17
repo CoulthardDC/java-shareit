@@ -11,8 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.user.exception.UserCreateException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.CreateException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.Optional;
@@ -57,16 +57,16 @@ public class UserServiceImplTest {
         when(mockUserRepository.findById(any(Long.class)))
                 .thenReturn(Optional.empty());
         Assertions.assertThrows(
-                UserNotFoundException.class,
+                NotFoundException.class,
                 () -> userService.getUserById(-1L));
     }
 
     @Test
     void shouldExceptionWhenCreateUserWithExistEmail() {
         when(mockUserRepository.save(any()))
-                .thenThrow(new UserCreateException());
+                .thenThrow(new CreateException("Ошибка при создании пользователя"));
         Assertions.assertThrows(
-                UserCreateException.class,
+                CreateException.class,
                 () -> userService.addUser(userDto));
     }
 

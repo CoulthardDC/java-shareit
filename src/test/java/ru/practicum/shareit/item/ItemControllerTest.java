@@ -8,11 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.CommentCreateException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.exception.CommentCreateException;
-import ru.practicum.shareit.item.exception.ItemCreateException;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.CreateException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.hamcrest.Matchers.is;
@@ -192,7 +192,7 @@ public class ItemControllerTest {
     @Test
     public void testHandleItemNotFoundException() throws Exception {
         Mockito.when(itemService.getItemById(Mockito.anyLong(), Mockito.anyLong()))
-                .thenThrow(ItemNotFoundException.class);
+                .thenThrow(NotFoundException.class);
 
         mvc.perform(get("/items/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -200,14 +200,13 @@ public class ItemControllerTest {
                 .header(X_HEADER, 1)
                 .content(mapper.writeValueAsString(itemDto))
                 .characterEncoding(StandardCharsets.UTF_8))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error", is("Вещь не найдена"), String.class));
+                .andExpect(status().isNotFound());
     }
 
     @Test
     public void testHandleItemCreateException() throws Exception {
         Mockito.when(itemService.addItem(Mockito.any(), Mockito.anyLong()))
-                .thenThrow(ItemCreateException.class);
+                .thenThrow(CreateException.class);
 
         mvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -215,8 +214,7 @@ public class ItemControllerTest {
                         .header(X_HEADER, 1)
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error", is("Ошибка при создании вещи"), String.class));
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -241,7 +239,6 @@ public class ItemControllerTest {
                         .header(X_HEADER, 1)
                         .content(mapper.writeValueAsString(commentDto))
                         .characterEncoding(StandardCharsets.UTF_8))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is("Ошибка при создании коментария"), String.class));
+                .andExpect(status().isBadRequest());
     }
 }

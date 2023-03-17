@@ -8,7 +8,7 @@ import org.mockito.Mock;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -67,7 +67,7 @@ public class ItemRequestServiceImplTest {
         when(mockItemRequestRepository.findById(any(Long.class)))
                 .thenReturn(Optional.empty());
         Assertions.assertThrows(
-                ItemRequestNotFoundException.class,
+                NotFoundException.class,
                 () -> itemRequestService.getRequestById(-1L, 1L));
     }
 }

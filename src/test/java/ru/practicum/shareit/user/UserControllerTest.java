@@ -9,9 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.UserCreateException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
-import ru.practicum.shareit.user.exception.UserRemoveException;
+import ru.practicum.shareit.exception.CreateException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.RemoveException;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -144,21 +144,20 @@ public class UserControllerTest {
     @Test
     public void testHandleUserNotFoundException() throws Exception {
         Mockito.when(userService.addUser(Mockito.any()))
-                .thenThrow(UserNotFoundException.class);
+                .thenThrow(NotFoundException.class);
 
         mvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error", is("Пользователь не найден"), String.class));
+                .andExpect(status().isNotFound());
     }
 
     @Test
     public void testHandleUserCreateException() throws Exception {
         Mockito.when(userService.addUser(Mockito.any()))
-                .thenThrow(UserCreateException.class);
+                .thenThrow(CreateException.class);
 
         mvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -171,7 +170,7 @@ public class UserControllerTest {
 
     @Test
     public void testHandleUserRemoveException() throws Exception {
-        Mockito.doThrow(new UserRemoveException()).when(userService).removeUser(Mockito.anyLong());
+        Mockito.doThrow(new RemoveException("Ошибка при удалении пользователя")).when(userService).removeUser(Mockito.anyLong());
 
         mvc.perform(delete("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)

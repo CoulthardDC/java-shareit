@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.request.dto.ErrorDto;
-import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 
-@RestControllerAdvice
+@RestControllerAdvice("ru.practicum.shareit.request")
 @Slf4j
 public class ItemRequestExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<?> itemRequestNotFoundExceptionHandler(ItemRequestNotFoundException e) {
+    public ResponseEntity<?> itemRequestNotFoundExceptionHandler(NotFoundException e) {
         log.warn(e.getMessage());
         return new ResponseEntity<>(
                 new ErrorDto("Реквест не найден", e.getMessage()),

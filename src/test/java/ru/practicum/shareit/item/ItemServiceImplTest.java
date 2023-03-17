@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class ItemServiceImplTest {
         when(mockItemRepository.findById(any(Long.class)))
                 .thenReturn(Optional.empty());
         Assertions.assertThrows(
-                ItemNotFoundException.class,
+                NotFoundException.class,
                 () -> itemService.getItemById(-1L, 1L));
     }
 }

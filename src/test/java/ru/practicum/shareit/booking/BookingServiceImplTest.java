@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -46,7 +46,7 @@ public class BookingServiceImplTest {
         when(mockBookingRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
         Assertions.assertThrows(
-                BookingNotFoundException.class,
+                NotFoundException.class,
                 () -> bookingService.getBookingById(-1L, 1L));
     }
 }

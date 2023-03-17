@@ -10,8 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
-import ru.practicum.shareit.booking.exception.BookingNotFoundException;
-import ru.practicum.shareit.booking.exception.PermissionException;
+import ru.practicum.shareit.exception.PermissionException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -202,7 +202,7 @@ public class BookingControllerTest {
     @Test
     public void testHandleBookingNotFoundException() throws Exception {
         Mockito.when(bookingService.getBookingById(Mockito.anyLong(), Mockito.anyLong()))
-                .thenThrow(BookingNotFoundException.class);
+                .thenThrow(NotFoundException.class);
 
         mvc.perform(get("/bookings/1")
                         .contentType(MediaType.APPLICATION_JSON)

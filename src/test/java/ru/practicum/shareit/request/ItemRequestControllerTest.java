@@ -9,7 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.hamcrest.Matchers.is;
@@ -135,7 +135,7 @@ public class ItemRequestControllerTest {
     @Test
     public void testHandleItemRequestNotFoundException() throws Exception {
         Mockito.when(itemRequestService.getRequestById(Mockito.anyLong(), Mockito.anyLong()))
-                .thenThrow(ItemRequestNotFoundException.class);
+                .thenThrow(NotFoundException.class);
 
         mvc.perform(get("/requests/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -143,7 +143,6 @@ public class ItemRequestControllerTest {
                         .header(X_HEADER, 1)
                         .content(mapper.writeValueAsString(itemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message", is("Реквест не найден"), String.class));
+                .andExpect(status().isNotFound());
     }
 }

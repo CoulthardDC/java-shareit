@@ -9,16 +9,15 @@ import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.exception.CommentCreateException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.exception.CommentCreateException;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.item.exception.PermissionException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.PermissionException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
@@ -87,7 +86,7 @@ public class ItemServiceImpl implements ItemService {
                 itemRepository.findById(itemId),
                 itemId);
         if (!item.getOwner().getId().equals(ownerId)) {
-            throw new ItemNotFoundException(itemId);
+            throw new NotFoundException(itemId);
         }
         if (itemDto.getName() != null) {
             item.setName(itemDto.getName());
@@ -190,13 +189,13 @@ public class ItemServiceImpl implements ItemService {
 
     private Item getItemOrElseThrow(Optional<Item> optionalItem, Long itemId) {
         return optionalItem.orElseThrow(
-                () -> new ItemNotFoundException(itemId)
+                () -> new NotFoundException(itemId)
         );
     }
 
     private User getUserOrElseThrow(Optional<User> optionalUser, Long userId) {
         return optionalUser.orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new NotFoundException(userId)
         );
     }
 

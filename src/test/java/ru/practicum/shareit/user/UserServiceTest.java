@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
-import ru.practicum.shareit.user.exception.UserCreateException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.CreateException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
@@ -33,7 +33,7 @@ class UserServiceTest {
 
     @Test
     void shouldExceptionWhenDeleteUserWithWrongId() {
-        assertThrows(UserNotFoundException.class, () -> userService.removeUser(10L));
+        assertThrows(NotFoundException.class, () -> userService.removeUser(10L));
     }
 
     @Test
@@ -68,7 +68,7 @@ class UserServiceTest {
         returnUserDto.setId(null);
         returnUserDto.setEmail("second@second.ru");
         Assertions.assertThrows(
-                UserCreateException.class,
+                CreateException.class,
                 () -> userService.updateUser(returnUserDto, id));
     }
 }
