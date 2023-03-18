@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.exception;
+package ru.practicum.shareit.exception;
 
 public class PermissionException extends RuntimeException {
     public PermissionException(String message) {

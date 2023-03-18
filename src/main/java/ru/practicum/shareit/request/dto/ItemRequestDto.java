@@ -4,12 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Builder
@@ -25,11 +26,20 @@ public class ItemRequestDto {
     String description;
 
     @Schema(description = "Юзер, разместивший запрос")
-    User requestor;
+    UserDto requestor;
 
-    @NotNull
     @Schema(description = "Дата и время создания запросаы")
     LocalDateTime created;
+
+    List<ItemDto> items;
+
+    public List<ItemDto> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemDto> items) {
+        this.items = items;
+    }
 
     public Long getId() {
         return id;
@@ -47,11 +57,11 @@ public class ItemRequestDto {
         this.description = description;
     }
 
-    public User getRequestor() {
+    public UserDto getRequestor() {
         return requestor;
     }
 
-    public void setRequestor(User requestor) {
+    public void setRequestor(UserDto requestor) {
         this.requestor = requestor;
     }
 

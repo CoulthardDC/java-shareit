@@ -10,8 +10,6 @@ import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -30,12 +28,10 @@ public class Booking {
     Long id;
 
     @Schema(description = "Дата начала бронирования")
-    @Future
     @Column(name = "start_date")
     LocalDateTime start;
 
     @Schema(description = "Дата окончания бронирования")
-    @FutureOrPresent
     @Column(name = "end_date")
     LocalDateTime end;
 
@@ -88,10 +84,6 @@ public class Booking {
 
     public User getBooker() {
         return booker;
-    }
-
-    public void setBooker(User booker) {
-        this.booker = booker;
     }
 
     public Status getStatus() {

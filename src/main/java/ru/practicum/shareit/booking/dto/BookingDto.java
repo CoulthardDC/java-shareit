@@ -69,10 +69,6 @@ public class BookingDto {
         return booker;
     }
 
-    public void setBooker(UserDto booker) {
-        this.booker = booker;
-    }
-
     public Status getStatus() {
         return status;
     }

@@ -5,8 +5,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.UserCreateException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.CreateException;
+import ru.practicum.shareit.exception.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
         try {
             return userMapper.toUserDto(userRepository.save(userMapper.toUser(userDto)));
         } catch (DataIntegrityViolationException e) {
-            throw new UserCreateException();
+            throw new CreateException("Ошибка при создании юзера");
         }
     }
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             userDto.setId(userId);
         }
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new NotFoundException(userId));
         if (userDto.getName() != null) {
             user.setName(userDto.getName());
         }
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
                     .allMatch(u -> u.getId().equals(userDto.getId()))) {
                 user.setEmail(userDto.getEmail());
             } else {
-                throw new UserCreateException();
+                throw new CreateException("Ошибка при обновлении юзера");
             }
 
         }
@@ -76,13 +76,13 @@ public class UserServiceImpl implements UserService {
         try {
             userRepository.deleteById(userId);
         } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException(userId);
+            throw new NotFoundException(userId);
         }
     }
 
     private User getUserOrElseThrow(Optional<User> optionalUser, Long userId) {
         return optionalUser.orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new NotFoundException(userId)
         );
     }
 }
