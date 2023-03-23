@@ -26,14 +26,14 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody ItemDto itemDto,
+    public ResponseEntity<Object> create(@Valid @RequestBody ItemDto itemDto,
                                     @RequestHeader(X_HEADER) long ownerId) {
         log.info("Получен запрос к эндпоинту: {} /items", "POST");
         return itemClient.createItem(ownerId, itemDto);
     }
 
     @PatchMapping(value = "/{itemId}")
-    public ResponseEntity<?> update(@RequestBody ItemDto itemDto,
+    public ResponseEntity<Object> update(@RequestBody ItemDto itemDto,
                                     @RequestHeader(X_HEADER) long ownerId,
                                     @PathVariable(value = "itemId") long itemId) {
         log.info("Получен запрос к эндпоинту: {} /items/{}", "PATCH", itemId);
@@ -41,14 +41,14 @@ public class ItemController {
     }
 
     @GetMapping(value = "/{itemId}")
-    public ResponseEntity<?> findItemById(@PathVariable(value = "itemId") long itemId,
+    public ResponseEntity<Object> findItemById(@PathVariable(value = "itemId") long itemId,
                                           @RequestHeader(X_HEADER) Long userId) {
         log.info("Получен запрос к эндпоинту: {} /items/{}", "GET", itemId);
         return itemClient.getItemById(userId, itemId);
     }
 
     @GetMapping
-    public ResponseEntity<?> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId,
+    public ResponseEntity<Object> findItemsByOwner(@RequestHeader(X_HEADER) long ownerId,
                                               @PositiveOrZero
                                               @RequestParam (name = "from", defaultValue = "0") int from,
                                               @Positive
@@ -58,7 +58,7 @@ public class ItemController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<?> searchItems(
+    public ResponseEntity<Object> searchItems(
             @RequestParam(value = "text", defaultValue = "") String text,
             @PositiveOrZero
             @RequestParam(name = "from", defaultValue = "0") int from,
@@ -69,7 +69,7 @@ public class ItemController {
     }
 
     @PostMapping(value = "/{itemId}/comment")
-    public ResponseEntity<?> addComment(@PathVariable(value = "itemId") long itemId,
+    public ResponseEntity<Object> addComment(@PathVariable(value = "itemId") long itemId,
                                         @RequestHeader(X_HEADER) Long authorId,
                                         @Valid @RequestBody CommentDto commentDto) {
         log.info("Получен запрос к эндпоинту: {} {}", "POST",
