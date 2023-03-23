@@ -26,18 +26,18 @@ public class ItemRequestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody ItemRequestDto requestDto,
+    public ResponseEntity<Object> create(@Valid @RequestBody ItemRequestDto requestDto,
                                     @RequestHeader(X_HEADER) long userId) {
         return requestClient.createRequest(userId, requestDto);
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUsersRequests(@RequestHeader(X_HEADER) long userId) {
+    public ResponseEntity<Object> getAllUsersRequests(@RequestHeader(X_HEADER) long userId) {
         return requestClient.getAllUsersRequest(userId);
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<?> getAllRequests(@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
+    public ResponseEntity<Object> getAllRequests(@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
                                             @Positive @RequestParam(name = "size",
                                                     required = false,
                                                     defaultValue = "10") int size,
@@ -46,7 +46,7 @@ public class ItemRequestController {
     }
 
     @GetMapping(value = "/{requestId}")
-    public ResponseEntity<?> getRequestById(@PathVariable(value = "requestId") long requestId,
+    public ResponseEntity<Object> getRequestById(@PathVariable(value = "requestId") long requestId,
                                             @RequestHeader(X_HEADER) long userId) {
         return requestClient.getRequestById(userId, requestId);
     }
