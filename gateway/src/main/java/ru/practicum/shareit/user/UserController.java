@@ -26,19 +26,19 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> findUserById(@PathVariable(value = "id") long userId) {
+    public ResponseEntity<Object> findUserById(@PathVariable(value = "id") long userId) {
         log.info("Получен запрос к эндпоинту: {} /users/{}", "GET",userId);
         return userClient.getUserById(userId);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> create(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> create(@Valid @RequestBody UserDto userDto) {
         log.info("Получен запрос к эндпоинту: {} /users", "POST");
         return userClient.createUser(userDto);
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(value = "id") long userId,
+    public ResponseEntity<Object> update(@PathVariable(value = "id") long userId,
                                     @RequestBody
                                     UserDto userDto) {
         log.info("Получен запрос к эндпоинту: {} /users/{}", "PATCH", userId);
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> removeUser(@PathVariable(value = "id") long userId) {
+    public ResponseEntity<Object> removeUser(@PathVariable(value = "id") long userId) {
         log.info("Получен запрос к эндпоинту: {} /users/{}", "DELETE", userId);
         return userClient.deleteUser(userId);
     }
